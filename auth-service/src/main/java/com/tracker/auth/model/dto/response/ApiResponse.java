@@ -31,12 +31,30 @@ public class ApiResponse<T> {
                 .build();
     }
 
-    // ── Error response ──
+    // ── Error response (with error code) ──
     public static <T> ApiResponse<T> error(String message, String error) {
         return ApiResponse.<T>builder()
                 .success(false)
                 .message(message)
                 .error(error)
+                .timestamp(Instant.now().toString())
+                .build();
+    }
+
+    // ── Error response (message only) ──
+    public static <T> ApiResponse<T> error(String message) {
+        return ApiResponse.<T>builder()
+                .success(false)
+                .message(message)
+                .timestamp(Instant.now().toString())
+                .build();
+    }
+
+    // ── Success response (message only, no data) ──
+    public static <T> ApiResponse<T> success(String message) {
+        return ApiResponse.<T>builder()
+                .success(true)
+                .message(message)
                 .timestamp(Instant.now().toString())
                 .build();
     }

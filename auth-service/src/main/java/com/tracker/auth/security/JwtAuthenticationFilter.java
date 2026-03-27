@@ -1,5 +1,6 @@
 package com.tracker.auth.security;
 
+import com.tracker.auth.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,6 +33,7 @@ import java.util.List;
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final TokenService tokenService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -43,15 +45,18 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
             if (StringUtils.hasText(token) && jwtTokenProvider.validateToken(token)) {
 
-                // TODO: Check Redis blacklist here when Redis is configured
-                // if (tokenBlacklistService.isBlacklisted(token)) { ... }
+                // Check if token is blacklisted (logged out)
+                if (tokenService.isBlacklisted(token)) {
+                    log.debug("Token is blacklisted — rejecting request");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
                 Long userId = jwtTokenProvider.getUserIdFromToken(token);
                 String email = jwtTokenProvider.getEmailFromToken(token);
                 String role = jwtTokenProvider.getRoleFromToken(token);
 
                 // Spring Security expects "ROLE_" prefix for hasRole() checks
-                // For hasAuthority() we use the role name directly
                 List<SimpleGrantedAuthority> authorities = List.of(
                         new SimpleGrantedAuthority("ROLE_" + role)
                 );

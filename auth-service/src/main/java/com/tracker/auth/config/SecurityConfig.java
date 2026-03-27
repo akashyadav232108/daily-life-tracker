@@ -50,7 +50,10 @@ public class SecurityConfig {
                 // Endpoint authorization rules
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints — no auth required
-                        .requestMatchers("/api/auth/**").permitAll()
+                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
+
+                        // Logout requires authentication (need token to blacklist)
+                        .requestMatchers("/api/auth/logout").authenticated()
 
                         // Admin endpoints — require ADMIN or SUPER_ADMIN role
                         .requestMatchers("/api/users/admin/**").hasAnyRole("ADMIN", "SUPER_ADMIN")

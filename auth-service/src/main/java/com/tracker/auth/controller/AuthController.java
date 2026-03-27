@@ -1,14 +1,18 @@
 package com.tracker.auth.controller;
 
 import com.tracker.auth.model.dto.request.LoginRequest;
+import com.tracker.auth.model.dto.request.RefreshTokenRequest;
 import com.tracker.auth.model.dto.request.RegisterRequest;
 import com.tracker.auth.model.dto.response.ApiResponse;
 import com.tracker.auth.model.dto.response.AuthResponse;
 import com.tracker.auth.service.AuthService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,5 +38,29 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
+    }
+
+    // ── POST /api/auth/refresh ──
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshTokenRequest request) {
+        AuthResponse response = authService.refreshToken(request);
+        return ResponseEntity.ok(ApiResponse.success("Token refreshed successfully", response));
+    }
+
+    // ── POST /api/auth/logout ──
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<Void>> logout(Authentication authentication,
+                                                     HttpServletRequest request) {
+        Long userId = (Long) authentication.getPrincipal();
+
+        // Extract access token from header to blacklist it
+        String bearerToken = request.getHeader("Authorization");
+        String accessToken = null;
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            accessToken = bearerToken.substring(7);
+        }
+
+        authService.logout(userId, accessToken);
+        return ResponseEntity.ok(ApiResponse.success("Logged out successfully"));
     }
 }

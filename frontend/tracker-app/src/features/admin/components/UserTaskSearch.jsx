@@ -97,7 +97,7 @@ const UserTaskSearch = () => {
       {usersLoading ? (
         <LoadingSpinner className="h-20" />
       ) : users.length > 0 ? (
-        <div className="overflow-hidden rounded-lg ring-1 ring-gray-200">
+        <div className="overflow-x-auto rounded-lg ring-1 ring-gray-200">
           <table className="min-w-full divide-y divide-gray-200">
             <thead className="bg-gray-50">
               <tr>
@@ -244,7 +244,7 @@ const UserTaskSearch = () => {
       {/* Delete confirmation dialog */}
       <ConfirmDialog
         isOpen={!!deleteTarget}
-        onClose={() => setDeleteTarget(null)}
+        onCancel={() => setDeleteTarget(null)}
         onConfirm={handleDeleteTask}
         title="Delete Task"
         message={`Are you sure you want to delete "${deleteTarget?.title}"? This action cannot be undone.`}

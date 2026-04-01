@@ -46,7 +46,7 @@ const PlatformTaskStats = () => {
 
   if (loading) {
     return (
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
         {[...Array(5)].map((_, i) => (
           <div key={i} className="h-24 animate-pulse rounded-xl bg-gray-100" />
         ))}
@@ -57,7 +57,7 @@ const PlatformTaskStats = () => {
   if (!stats) return null;
 
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-5">
+    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
       <StatCard
         icon={HiClipboardDocumentList}
         label="Total Tasks"

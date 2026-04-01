@@ -17,7 +17,7 @@ const ProfilePage = () => {
       </div>
 
       {/* Profile overview card */}
-      <div className="mb-8 flex items-center gap-4 rounded-xl bg-gradient-to-r from-primary to-primary-dark p-6 text-white shadow-lg">
+      <div className="mb-8 flex items-center gap-4 rounded-xl bg-gradient-to-br from-primary/90 to-primary-dark/80 p-6 text-white shadow-lg">
         <div className="flex h-16 w-16 items-center justify-center rounded-full bg-white/20 text-3xl font-bold">
           {user?.fullName?.charAt(0)?.toUpperCase() || 'U'}
         </div>

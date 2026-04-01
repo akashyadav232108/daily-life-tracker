@@ -144,7 +144,7 @@ const TaskForm = ({ isOpen, onClose, editingTask = null }) => {
           </div>
 
           {/* Priority + Due Date row */}
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             {/* Priority */}
             <div>
               <label htmlFor="priority" className="mb-1 block text-sm font-medium text-gray-700">

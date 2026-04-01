@@ -1,10 +1,11 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from '../features/auth/authSlice';
+import tasksReducer from '../features/tasks/taskSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
-    // tasks: tasksReducer,         // Phase 2 — task-service
+    tasks: tasksReducer,
     // health: healthReducer,       // Phase 3 — health-service
     // exercise: exerciseReducer,   // Phase 3 — health-service
     // expenses: expensesReducer,   // Phase 4 — expense-service

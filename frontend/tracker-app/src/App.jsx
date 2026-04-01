@@ -9,6 +9,7 @@ import RegisterPage from './features/auth/pages/RegisterPage';
 
 // Protected pages
 import DashboardPage from './features/dashboard/pages/DashboardPage';
+import TasksPage from './features/tasks/pages/TasksPage';
 
 const App = () => {
   return (
@@ -29,13 +30,13 @@ const App = () => {
         }
       />
 
-      {/* Task routes — placeholder until Phase 2 commit */}
+      {/* Task routes */}
       <Route
         path="/tasks"
         element={
           <ProtectedRoute>
             <PageLayout>
-              <PlaceholderPage title="Tasks" message="Task management module loading..." />
+              <TasksPage />
             </PageLayout>
           </ProtectedRoute>
         }

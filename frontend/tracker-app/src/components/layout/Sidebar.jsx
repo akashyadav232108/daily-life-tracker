@@ -6,6 +6,7 @@ import {
   HiBolt,
   HiCurrencyDollar,
   HiShieldCheck,
+  HiUsers,
   HiXMark,
 } from 'react-icons/hi2';
 import useAuth from '../../hooks/useAuth';
@@ -19,7 +20,8 @@ const navItems = [
 ];
 
 const adminItems = [
-  { to: '/admin', icon: HiShieldCheck, label: 'Admin Panel' },
+  { to: '/admin', icon: HiShieldCheck, label: 'Admin Tasks' },
+  { to: '/admin/users', icon: HiUsers, label: 'User Management', comingSoon: true },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
@@ -93,12 +95,23 @@ const Sidebar = ({ isOpen, onClose }) => {
               {adminItems.map((item) => (
                 <NavLink
                   key={item.to}
-                  to={item.to}
-                  className={linkClass}
-                  onClick={onClose}
+                  to={item.comingSoon ? '#' : item.to}
+                  className={item.comingSoon ? () =>
+                    'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-gray-500 cursor-not-allowed'
+                    : linkClass
+                  }
+                  onClick={(e) => {
+                    if (item.comingSoon) e.preventDefault();
+                    else onClose();
+                  }}
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
                   <span>{item.label}</span>
+                  {item.comingSoon && (
+                    <span className="ml-auto rounded-full bg-gray-700 px-2 py-0.5 text-[10px] text-gray-400">
+                      Soon
+                    </span>
+                  )}
                 </NavLink>
               ))}
             </>

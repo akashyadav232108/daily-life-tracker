@@ -1,8 +1,8 @@
 // Priority colors for task cards
 export const PRIORITY_COLORS = {
-  HIGH: { bg: 'bg-red-100', text: 'text-red-700', badge: 'bg-red-500' },
-  MEDIUM: { bg: 'bg-yellow-100', text: 'text-yellow-700', badge: 'bg-yellow-500' },
-  LOW: { bg: 'bg-green-100', text: 'text-green-700', badge: 'bg-green-500' },
+  HIGH: { bg: 'bg-red-100', text: 'text-red-700', badge: 'bg-red-500', border: 'border-red-500' },
+  MEDIUM: { bg: 'bg-yellow-100', text: 'text-yellow-700', badge: 'bg-yellow-500', border: 'border-yellow-500' },
+  LOW: { bg: 'bg-green-100', text: 'text-green-700', badge: 'bg-green-500', border: 'border-green-500' },
 };
 
 // Status labels

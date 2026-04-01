@@ -11,6 +11,7 @@ import RegisterPage from './features/auth/pages/RegisterPage';
 import DashboardPage from './features/dashboard/pages/DashboardPage';
 import TasksPage from './features/tasks/pages/TasksPage';
 import ProfilePage from './features/auth/pages/ProfilePage';
+import AdminTasksPage from './features/admin/pages/AdminTasksPage';
 
 const App = () => {
   return (
@@ -94,10 +95,19 @@ const App = () => {
           <ProtectedRoute>
             <AdminRoute>
               <PageLayout>
-                <PlaceholderPage
-                  title="Admin Dashboard"
-                  message="Admin panel will show platform stats once all services are integrated."
-                />
+                <AdminTasksPage />
+              </PageLayout>
+            </AdminRoute>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/tasks"
+        element={
+          <ProtectedRoute>
+            <AdminRoute>
+              <PageLayout>
+                <AdminTasksPage />
               </PageLayout>
             </AdminRoute>
           </ProtectedRoute>

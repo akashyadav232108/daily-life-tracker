@@ -31,6 +31,18 @@ const authAPI = {
    * GET /api/users/me — Get current user profile
    */
   getProfile: () => authAxios.get('/api/users/me'),
+
+  /**
+   * PUT /api/users/me — Update profile (name, telegram chat ID)
+   * @param {{ fullName?: string, telegramChatId?: string }} data
+   */
+  updateProfile: (data) => authAxios.put('/api/users/me', data),
+
+  /**
+   * PUT /api/users/me/password — Change password
+   * @param {{ currentPassword: string, newPassword: string }} data
+   */
+  changePassword: (data) => authAxios.put('/api/users/me/password', data),
 };
 
 export default authAPI;

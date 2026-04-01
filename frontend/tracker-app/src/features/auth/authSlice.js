@@ -76,10 +76,16 @@ const authSlice = createSlice({
     clearError: (state) => {
       state.error = null;
     },
+
+    // Update user data in store + localStorage (used after profile edit)
+    updateUser: (state, action) => {
+      state.user = { ...state.user, ...action.payload };
+      localStorage.setItem('user', JSON.stringify(state.user));
+    },
   },
 });
 
-export const { setCredentials, clearCredentials, setLoading, setError, clearError } =
+export const { setCredentials, clearCredentials, setLoading, setError, clearError, updateUser } =
   authSlice.actions;
 
 // Selectors

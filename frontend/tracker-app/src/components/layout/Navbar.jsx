@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { HiBell, HiUserCircle, HiArrowRightOnRectangle, HiBars3 } from 'react-icons/hi2';
+import { HiBell, HiUserCircle, HiArrowRightOnRectangle, HiBars3, HiCog6Tooth } from 'react-icons/hi2';
 import useAuth from '../../hooks/useAuth';
 import { clearCredentials } from '../../features/auth/authSlice';
 import toast from 'react-hot-toast';
@@ -77,6 +77,16 @@ const Navbar = ({ onToggleSidebar }) => {
                   {user?.role}
                 </span>
               </div>
+              <button
+                onClick={() => {
+                  setShowUserMenu(false);
+                  navigate('/profile');
+                }}
+                className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+              >
+                <HiCog6Tooth className="h-4 w-4" />
+                My Profile
+              </button>
               <button
                 onClick={handleLogout}
                 className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"

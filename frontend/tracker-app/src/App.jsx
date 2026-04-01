@@ -10,6 +10,7 @@ import RegisterPage from './features/auth/pages/RegisterPage';
 // Protected pages
 import DashboardPage from './features/dashboard/pages/DashboardPage';
 import TasksPage from './features/tasks/pages/TasksPage';
+import ProfilePage from './features/auth/pages/ProfilePage';
 
 const App = () => {
   return (
@@ -37,6 +38,18 @@ const App = () => {
           <ProtectedRoute>
             <PageLayout>
               <TasksPage />
+            </PageLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Profile page */}
+      <Route
+        path="/profile"
+        element={
+          <ProtectedRoute>
+            <PageLayout>
+              <ProfilePage />
             </PageLayout>
           </ProtectedRoute>
         }

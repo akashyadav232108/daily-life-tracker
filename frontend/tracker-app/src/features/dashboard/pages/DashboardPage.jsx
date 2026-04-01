@@ -4,9 +4,13 @@ import {
   HiHeart,
   HiBolt,
   HiCurrencyDollar,
+  HiPlus,
 } from 'react-icons/hi2';
 import useAuth from '../../../hooks/useAuth';
+import TodayTaskSummary from '../components/TodayTaskSummary';
+import UpcomingTasks from '../components/UpcomingTasks';
 
+// ─── Quick-action cards ─────────────────────────────────────────
 const quickActions = [
   {
     label: 'Tasks',
@@ -42,6 +46,29 @@ const quickActions = [
   },
 ];
 
+// ─── Placeholder "coming soon" widgets for unimplemented services ─
+const comingSoonWidgets = [
+  {
+    title: 'Health Status',
+    description: 'Daily health logs, mood tracking, and custom metrics will appear here.',
+    icon: HiHeart,
+    color: 'text-pink-400',
+  },
+  {
+    title: "Today's Workout",
+    description: 'Exercise plan details and workout tracking will appear here.',
+    icon: HiBolt,
+    color: 'text-orange-400',
+  },
+  {
+    title: "Today's Spending",
+    description: 'Expense summaries and budget status will appear here.',
+    icon: HiCurrencyDollar,
+    color: 'text-green-400',
+  },
+];
+
+// ─── Page ─────────────────────────────────────────────────────────
 const DashboardPage = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
@@ -54,17 +81,32 @@ const DashboardPage = () => {
   };
 
   return (
-    <div>
-      {/* Welcome header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900">
-          {getGreeting()}, {user?.fullName || 'there'}!
-        </h1>
-        <p className="mt-1 text-gray-500">Here's your daily overview</p>
+    <div className="space-y-8">
+      {/* ── Welcome header ── */}
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">
+            {getGreeting()}, {user?.fullName || 'there'}!
+          </h1>
+          <p className="mt-1 text-gray-500">Here's your daily overview</p>
+        </div>
+        <button
+          onClick={() => navigate('/tasks')}
+          className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-dark transition-colors"
+        >
+          <HiPlus className="h-4 w-4" />
+          New Task
+        </button>
       </div>
 
-      {/* Quick Actions Grid */}
-      <div className="mb-8">
+      {/* ── Live task widgets ── */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <TodayTaskSummary />
+        <UpcomingTasks />
+      </div>
+
+      {/* ── Quick Actions ── */}
+      <section>
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Quick Actions</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {quickActions.map((action) => (
@@ -95,15 +137,27 @@ const DashboardPage = () => {
             </button>
           ))}
         </div>
-      </div>
+      </section>
 
-      {/* Placeholder summary cards */}
-      <div className="rounded-xl border border-dashed border-gray-300 bg-white p-8 text-center">
-        <p className="text-gray-400">
-          Dashboard summary, streaks, and insights will appear here once more services are
-          integrated.
-        </p>
-      </div>
+      {/* ── Coming-soon service widgets ── */}
+      <section>
+        <h2 className="mb-4 text-lg font-semibold text-gray-900">Other Modules</h2>
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {comingSoonWidgets.map((widget) => (
+            <div
+              key={widget.title}
+              className="relative overflow-hidden rounded-xl border border-dashed border-gray-300 bg-white p-6"
+            >
+              <widget.icon className={`h-8 w-8 ${widget.color}`} />
+              <h3 className="mt-3 font-semibold text-gray-700">{widget.title}</h3>
+              <p className="mt-1 text-sm text-gray-400">{widget.description}</p>
+              <span className="absolute top-3 right-3 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
+                Coming Soon
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

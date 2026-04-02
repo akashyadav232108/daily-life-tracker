@@ -5,6 +5,7 @@ import com.tracker.health.model.dto.response.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
@@ -12,10 +13,12 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 @Slf4j
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    // Inject Spring Boot's auto-configured ObjectMapper (includes JavaTimeModule)
+    private final ObjectMapper objectMapper;
 
     @Override
     public void commence(HttpServletRequest request,

@@ -1,5 +1,7 @@
 import { HiChartBarSquare, HiMagnifyingGlassCircle } from 'react-icons/hi2';
 import PlatformTaskStats from '../components/PlatformTaskStats';
+import PlatformHealthStats from '../components/PlatformHealthStats';
+import PlatformExerciseStats from '../components\PlatformExerciseStats';
 import UserTaskSearch from '../components/UserTaskSearch';
 
 const AdminTasksPage = () => {
@@ -19,7 +21,11 @@ const AdminTasksPage = () => {
           <HiChartBarSquare className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold text-gray-900">Platform Statistics</h2>
         </div>
-        <PlatformTaskStats />
+        <div className="space-y-6">
+          <PlatformTaskStats />
+          <PlatformHealthStats />
+          <PlatformExerciseStats />
+        </div>
       </section>
 
       {/* User Task Lookup */}

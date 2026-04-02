@@ -1,4 +1,4 @@
-import { authAxios, taskAxios } from '../../app/axiosInstance';
+import { authAxios, taskAxios, healthAxios } from '../../app/axiosInstance';
 
 /**
  * Admin API calls — combines auth-service admin & task-service admin endpoints.
@@ -87,5 +87,16 @@ export const adminFetchUserTasks = async (userId) => {
  */
 export const adminDeleteTask = async (taskId) => {
   const response = await taskAxios.delete(`/api/tasks/admin/${taskId}`);
+  return response.data;
+};
+
+// ─── Health-Service Admin (/api/health/admin, /api/exercises/admin) ───────────
+export const adminFetchHealthStats = async () => {
+  const response = await healthAxios.get('/api/health/admin/stats');
+  return response.data;
+};
+
+export const adminFetchExerciseStats = async () => {
+  const response = await healthAxios.get('/api/exercises/admin/stats');
   return response.data;
 };

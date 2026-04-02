@@ -9,6 +9,8 @@ import {
 import useAuth from '../../../hooks/useAuth';
 import TodayTaskSummary from '../components/TodayTaskSummary';
 import UpcomingTasks from '../components/UpcomingTasks';
+import TodayHealthSummary from '../components/TodayHealthSummary';
+import TodayWorkout from '../components/TodayWorkout';
 
 // ─── Quick-action cards ─────────────────────────────────────────
 const quickActions = [
@@ -26,7 +28,7 @@ const quickActions = [
     icon: HiHeart,
     to: '/health',
     color: 'bg-pink-500',
-    available: false,
+    available: true,
   },
   {
     label: 'Exercise',
@@ -34,7 +36,7 @@ const quickActions = [
     icon: HiBolt,
     to: '/exercise',
     color: 'bg-orange-500',
-    available: false,
+    available: true,
   },
   {
     label: 'Expenses',
@@ -46,20 +48,8 @@ const quickActions = [
   },
 ];
 
-// ─── Placeholder "coming soon" widgets for unimplemented services ─
+// ─── Placeholder widgets for modules not yet implemented ─
 const comingSoonWidgets = [
-  {
-    title: 'Health Status',
-    description: 'Daily health logs, mood tracking, and custom metrics will appear here.',
-    icon: HiHeart,
-    color: 'text-pink-400',
-  },
-  {
-    title: "Today's Workout",
-    description: 'Exercise plan details and workout tracking will appear here.',
-    icon: HiBolt,
-    color: 'text-orange-400',
-  },
   {
     title: "Today's Spending",
     description: 'Expense summaries and budget status will appear here.',
@@ -103,6 +93,12 @@ const DashboardPage = () => {
       <div className="grid gap-6 lg:grid-cols-2">
         <TodayTaskSummary />
         <UpcomingTasks />
+      </div>
+
+      {/* ── Health & Exercise ── */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        <TodayHealthSummary />
+        <TodayWorkout />
       </div>
 
       {/* ── Quick Actions ── */}

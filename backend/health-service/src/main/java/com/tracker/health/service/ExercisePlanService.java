@@ -31,6 +31,12 @@ public class ExercisePlanService {
 
     @Transactional
     public ExercisePlanResponse createPlan(Long userId, ExercisePlanRequest request) {
+        // Deactivate ALL currently active plans for this user before creating a new active one
+        exercisePlanRepository.findAllByUserIdAndIsActiveTrue(userId).forEach(p -> {
+            p.setActive(false);
+            exercisePlanRepository.save(p);
+        });
+
         ExercisePlan plan = ExercisePlan.builder()
                 .userId(userId)
                 .planName(request.getPlanName())
@@ -79,7 +85,7 @@ public class ExercisePlanService {
 
     @Transactional(readOnly = true)
     public Optional<ExercisePlanResponse> getActivePlan(Long userId) {
-        return exercisePlanRepository.findByUserIdAndIsActiveTrue(userId)
+        return exercisePlanRepository.findFirstByUserIdAndIsActiveTrueOrderByCreatedAtDesc(userId)
                 .map(this::toResponseWithChildren);
     }
 
@@ -165,7 +171,7 @@ public class ExercisePlanService {
 
     @Transactional(readOnly = true)
     public TodayWorkoutResponse getTodayPlannedExercises(Long userId) {
-        ExercisePlan active = exercisePlanRepository.findByUserIdAndIsActiveTrue(userId)
+        ExercisePlan active = exercisePlanRepository.findFirstByUserIdAndIsActiveTrueOrderByCreatedAtDesc(userId)
                 .orElseThrow(() -> new IllegalArgumentException("No active plan found"));
         DayOfWeek dow = LocalDate.now().getDayOfWeek();
         String today = dow.name();

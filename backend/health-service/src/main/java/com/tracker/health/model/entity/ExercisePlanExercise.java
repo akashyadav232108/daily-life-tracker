@@ -34,10 +34,10 @@ public class ExercisePlanExercise {
     @Column(name = "exercise_name", nullable = false, length = 100)
     private String exerciseName;
 
-    @Column(name = "sets")
+    @Column(name = "num_sets")
     private Integer sets;
 
-    @Column(name = "reps")
+    @Column(name = "num_reps")
     private Integer reps;
 
     @Column(name = "duration_minutes")

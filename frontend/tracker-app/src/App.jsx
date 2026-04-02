@@ -13,6 +13,7 @@ import TasksPage from './features/tasks/pages/TasksPage';
 import ProfilePage from './features/auth/pages/ProfilePage';
 import AdminTasksPage from './features/admin/pages/AdminTasksPage';
 import HealthPage from './features/health/pages/HealthPage';
+import ExercisePage from './features/exercises/pages/ExercisePage';
 
 const App = () => {
   return (
@@ -64,6 +65,17 @@ const App = () => {
           <ProtectedRoute>
             <PageLayout>
               <HealthPage />
+            </PageLayout>
+          </ProtectedRoute>
+        }
+      />
+      {/* Exercise */}
+      <Route
+        path="/exercise"
+        element={
+          <ProtectedRoute>
+            <PageLayout>
+              <ExercisePage />
             </PageLayout>
           </ProtectedRoute>
         }

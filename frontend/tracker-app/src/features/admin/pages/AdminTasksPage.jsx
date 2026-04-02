@@ -1,7 +1,7 @@
 import { HiChartBarSquare, HiMagnifyingGlassCircle } from 'react-icons/hi2';
 import PlatformTaskStats from '../components/PlatformTaskStats';
 import PlatformHealthStats from '../components/PlatformHealthStats';
-import PlatformExerciseStats from '../components\PlatformExerciseStats';
+import PlatformExerciseStats from '../components/PlatformExerciseStats';
 import UserTaskSearch from '../components/UserTaskSearch';
 
 const AdminTasksPage = () => {

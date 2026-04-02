@@ -15,11 +15,15 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
+
+  # ── Caching (Caffeine — configured programmatically in CacheConfig.java) ──
+  cache:
+    type: caffeine
 
   # ── Jackson: enable Java 8 date/time serialization ──
   jackson:

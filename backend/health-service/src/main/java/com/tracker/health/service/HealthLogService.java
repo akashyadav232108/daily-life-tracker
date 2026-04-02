@@ -21,6 +21,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,8 @@ public class HealthLogService {
     private final CustomMetricRepository customMetricRepository;
     private final CustomMetricLogRepository customMetricLogRepository;
 
+    // Evict weekly summary so the next read reflects the newly logged data
+    @CacheEvict(value = "weeklySummary", key = "#userId")
     @Transactional
     public HealthLogResponse upsertHealthLog(Long userId, HealthLogRequest request) {
         LocalDate date = Optional.ofNullable(request.getLogDate()).orElse(LocalDate.now());
@@ -71,6 +75,8 @@ public class HealthLogService {
                 .map(log -> toHealthLogResponseWithCustomMetrics(log, userId));
     }
 
+    // Weekly aggregates don't change until the next upsert — safe to cache per user
+    @Cacheable(value = "weeklySummary", key = "#userId")
     @Transactional(readOnly = true)
     public WeeklyHealthSummaryResponse getWeeklySummary(Long userId) {
         LocalDate today = LocalDate.now();

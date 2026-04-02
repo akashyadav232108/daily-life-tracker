@@ -18,6 +18,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -29,6 +32,12 @@ public class ExercisePlanService {
     private final ExercisePlanDayRepository exercisePlanDayRepository;
     private final ExercisePlanExerciseRepository exercisePlanExerciseRepository;
 
+    // Creating a new plan always makes it active → evict all three plan-related caches
+    @Caching(evict = {
+            @CacheEvict(value = "exercisePlans", key = "#userId"),
+            @CacheEvict(value = "activePlan",    key = "#userId"),
+            @CacheEvict(value = "todayPlanned",  key = "#userId")
+    })
     @Transactional
     public ExercisePlanResponse createPlan(Long userId, ExercisePlanRequest request) {
         // Deactivate ALL currently active plans for this user before creating a new active one
@@ -74,6 +83,8 @@ public class ExercisePlanService {
         return toResponseWithChildren(savedPlan);
     }
 
+    // All plans for a user rarely change — safe to cache per user for 5 min
+    @Cacheable(value = "exercisePlans", key = "#userId")
     @Transactional(readOnly = true)
     public List<ExercisePlanResponse> getPlans(Long userId) {
         return exercisePlanRepository.findAllByUserId(userId).stream()
@@ -83,6 +94,8 @@ public class ExercisePlanService {
                 .collect(Collectors.toList());
     }
 
+    // Active plan changes only on create/activate/delete — safe to cache per user
+    @Cacheable(value = "activePlan", key = "#userId")
     @Transactional(readOnly = true)
     public Optional<ExercisePlanResponse> getActivePlan(Long userId) {
         return exercisePlanRepository.findFirstByUserIdAndIsActiveTrueOrderByCreatedAtDesc(userId)
@@ -96,6 +109,12 @@ public class ExercisePlanService {
                 .map(this::toResponseWithChildren);
     }
 
+    // Plan content changed — evict plan list and active plan (active plan may have changed content)
+    @Caching(evict = {
+            @CacheEvict(value = "exercisePlans", key = "#userId"),
+            @CacheEvict(value = "activePlan",    key = "#userId"),
+            @CacheEvict(value = "todayPlanned",  key = "#userId")
+    })
     @Transactional
     public ExercisePlanResponse updatePlan(Long userId, Long planId, ExercisePlanRequest request) {
         ExercisePlan plan = exercisePlanRepository.findById(planId)
@@ -142,6 +161,12 @@ public class ExercisePlanService {
         return toResponseWithChildren(plan);
     }
 
+    // Plan deleted — evict all three; the deleted plan may have been the active one
+    @Caching(evict = {
+            @CacheEvict(value = "exercisePlans", key = "#userId"),
+            @CacheEvict(value = "activePlan",    key = "#userId"),
+            @CacheEvict(value = "todayPlanned",  key = "#userId")
+    })
     @Transactional
     public void deletePlan(Long userId, Long planId) {
         ExercisePlan plan = exercisePlanRepository.findById(planId)
@@ -150,6 +175,12 @@ public class ExercisePlanService {
         exercisePlanRepository.delete(plan);
     }
 
+    // Active plan changed — all three caches must be invalidated
+    @Caching(evict = {
+            @CacheEvict(value = "exercisePlans", key = "#userId"),
+            @CacheEvict(value = "activePlan",    key = "#userId"),
+            @CacheEvict(value = "todayPlanned",  key = "#userId")
+    })
     @Transactional
     public void activatePlan(Long userId, Long planId) {
         ExercisePlan plan = exercisePlanRepository.findById(planId)
@@ -169,6 +200,9 @@ public class ExercisePlanService {
         exercisePlanRepository.save(plan);
     }
 
+    // Today's workout only changes when the active plan changes or is deleted
+    // @Cacheable won't store anything if the method throws (no active plan) — safe
+    @Cacheable(value = "todayPlanned", key = "#userId")
     @Transactional(readOnly = true)
     public TodayWorkoutResponse getTodayPlannedExercises(Long userId) {
         ExercisePlan active = exercisePlanRepository.findFirstByUserIdAndIsActiveTrueOrderByCreatedAtDesc(userId)

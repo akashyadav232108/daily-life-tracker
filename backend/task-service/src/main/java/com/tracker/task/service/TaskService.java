@@ -13,6 +13,8 @@ import com.tracker.task.model.enums.TaskStatus;
 import com.tracker.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +39,7 @@ public class TaskService {
     /**
      * Create a new task for the authenticated user.
      */
+    @CacheEvict(value = "platformStats", allEntries = true)
     public TaskResponse createTask(Long userId, CreateTaskRequest request) {
         Task task = Task.builder()
                 .userId(userId)
@@ -122,6 +125,7 @@ public class TaskService {
      * Update an existing task — only if the user owns it.
      * Only non-null fields in the request are updated.
      */
+    @CacheEvict(value = "platformStats", allEntries = true)
     public TaskResponse updateTask(Long userId, Long taskId, UpdateTaskRequest request) {
         Task task = findUserTask(userId, taskId);
 
@@ -151,6 +155,7 @@ public class TaskService {
      * Mark a task as completed.
      * If the task is recurring, atomically creates the next occurrence.
      */
+    @CacheEvict(value = "platformStats", allEntries = true)
     @Transactional
     public TaskResponse completeTask(Long userId, Long taskId) {
         Task task = findUserTask(userId, taskId);
@@ -174,6 +179,7 @@ public class TaskService {
     /**
      * Reopen a completed task (set back to PENDING).
      */
+    @CacheEvict(value = "platformStats", allEntries = true)
     public TaskResponse reopenTask(Long userId, Long taskId) {
         Task task = findUserTask(userId, taskId);
 
@@ -193,6 +199,7 @@ public class TaskService {
     /**
      * Delete a task (hard delete) — only if the user owns it.
      */
+    @CacheEvict(value = "platformStats", allEntries = true)
     public void deleteTask(Long userId, Long taskId) {
         Task task = findUserTask(userId, taskId);
         taskRepository.delete(task);
@@ -213,7 +220,9 @@ public class TaskService {
 
     /**
      * Admin: Get platform-level task statistics.
+     * Cached for 60 s — evicted automatically whenever any task is mutated.
      */
+    @Cacheable(value = "platformStats", key = "'global'")
     public TaskStatsResponse getPlatformStats() {
         long totalTasks = taskRepository.count();
         long completedTasks = taskRepository.countByStatus(TaskStatus.COMPLETED);
@@ -236,6 +245,7 @@ public class TaskService {
     /**
      * Super Admin: Delete any user's task by taskId.
      */
+    @CacheEvict(value = "platformStats", allEntries = true)
     public void adminDeleteTask(Long taskId) {
         Task task = taskRepository.findById(taskId)
                 .orElseThrow(() -> new TaskNotFoundException(taskId));

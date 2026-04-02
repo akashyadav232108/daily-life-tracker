@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +24,7 @@ public class CustomMetricService {
     private final CustomMetricRepository customMetricRepository;
     private final CustomMetricLogRepository customMetricLogRepository;
 
+    @CacheEvict(value = "customMetrics", key = "#userId")
     @Transactional
     public CustomMetricResponse createMetric(Long userId, CustomMetricRequest request) {
         CustomMetric metric = CustomMetric.builder()
@@ -33,6 +36,8 @@ public class CustomMetricService {
         return toResponse(saved);
     }
 
+    // Custom metrics rarely change — safe to cache per user for 10 min
+    @Cacheable(value = "customMetrics", key = "#userId")
     @Transactional(readOnly = true)
     public List<CustomMetricResponse> getMetrics(Long userId) {
         return customMetricRepository.findAllByUserId(userId).stream()
@@ -40,6 +45,7 @@ public class CustomMetricService {
                 .collect(Collectors.toList());
     }
 
+    @CacheEvict(value = "customMetrics", key = "#userId")
     @Transactional
     public void deleteMetric(Long userId, Long metricId) {
         CustomMetric metric = customMetricRepository.findById(metricId)

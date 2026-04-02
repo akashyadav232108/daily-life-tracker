@@ -14,8 +14,8 @@ import useAuth from '../../hooks/useAuth';
 const navItems = [
   { to: '/', icon: HiHome, label: 'Dashboard' },
   { to: '/tasks', icon: HiClipboardDocumentList, label: 'Tasks' },
-  { to: '/health', icon: HiHeart, label: 'Health', comingSoon: true },
-  { to: '/exercise', icon: HiBolt, label: 'Exercise', comingSoon: true },
+  { to: '/health', icon: HiHeart, label: 'Health' },
+  { to: '/exercise', icon: HiBolt, label: 'Exercise' },
   { to: '/expenses', icon: HiCurrencyDollar, label: 'Expenses', comingSoon: true },
 ];
 

@@ -20,7 +20,7 @@ const PlanBuilder = ({ plans, activePlan }) => {
   };
 
   const onAddExercise = (idx) => {
-    setGrid(g => g.map((row, i) => i === idx ? { ...row, exercises: [...row.exercises, { exerciseName: '', sets: 3, reps: 10, orderIndex: row.exercises.length + 1 }] } : row));
+    setGrid(g => g.map((row, i) => i === idx ? { ...row, exercises: [...row.exercises, { exerciseName: '', numSets: 3, numReps: 10, orderIndex: row.exercises.length + 1 }] } : row));
   };
 
   const onExerciseChange = (dayIdx, exIdx, field, value) => {
@@ -73,8 +73,8 @@ const PlanBuilder = ({ plans, activePlan }) => {
                   {row.exercises.map((ex, exIdx) => (
                     <div key={exIdx} className="grid grid-cols-4 gap-2">
                       <input className="input col-span-2" placeholder="Exercise" value={ex.exerciseName} onChange={(e) => onExerciseChange(idx, exIdx, 'exerciseName', e.target.value)} />
-                      <input className="input" type="number" placeholder="Sets" value={ex.sets} onChange={(e) => onExerciseChange(idx, exIdx, 'sets', e.target.value)} />
-                      <input className="input" type="number" placeholder="Reps" value={ex.reps} onChange={(e) => onExerciseChange(idx, exIdx, 'reps', e.target.value)} />
+                      <input className="input" type="number" placeholder="Sets" value={ex.numSets} onChange={(e) => onExerciseChange(idx, exIdx, 'numSets', e.target.value)} />
+                      <input className="input" type="number" placeholder="Reps" value={ex.numReps} onChange={(e) => onExerciseChange(idx, exIdx, 'numReps', e.target.value)} />
                     </div>
                   ))}
                 </div>

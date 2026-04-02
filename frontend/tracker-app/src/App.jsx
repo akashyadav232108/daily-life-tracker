@@ -80,17 +80,6 @@ const App = () => {
           </ProtectedRoute>
         }
       />
-      {/* Future service pages — placeholders */}
-      <Route
-        path="/exercise"
-        element={
-          <ProtectedRoute>
-            <PageLayout>
-              <PlaceholderPage title="Exercise" message="Coming in Phase 3 — Workout tracking" />
-            </PageLayout>
-          </ProtectedRoute>
-        }
-      />
       <Route
         path="/expenses"
         element={

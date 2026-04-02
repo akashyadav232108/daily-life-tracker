@@ -12,6 +12,7 @@ import DashboardPage from './features/dashboard/pages/DashboardPage';
 import TasksPage from './features/tasks/pages/TasksPage';
 import ProfilePage from './features/auth/pages/ProfilePage';
 import AdminTasksPage from './features/admin/pages/AdminTasksPage';
+import HealthPage from './features/health/pages/HealthPage';
 
 const App = () => {
   return (
@@ -56,17 +57,18 @@ const App = () => {
         }
       />
 
-      {/* Future service pages — placeholders */}
+      {/* Health */}
       <Route
         path="/health"
         element={
           <ProtectedRoute>
             <PageLayout>
-              <PlaceholderPage title="Health" message="Coming in Phase 3 — Health tracking" />
+              <HealthPage />
             </PageLayout>
           </ProtectedRoute>
         }
       />
+      {/* Future service pages — placeholders */}
       <Route
         path="/exercise"
         element={

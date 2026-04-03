@@ -2,7 +2,6 @@ package com.tracker.expense.model.dto.request;
 
 import com.tracker.expense.model.enums.Category;
 import jakarta.validation.constraints.DecimalMin;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
@@ -12,7 +11,6 @@ import java.math.BigDecimal;
 @Data
 public class BudgetRequest {
 
-    @NotNull(message = "Category is required")
     private Category category;
 
     @NotNull(message = "Monthly limit is required")

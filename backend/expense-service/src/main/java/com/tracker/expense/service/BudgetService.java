@@ -40,6 +40,9 @@ public class BudgetService {
 
     @Transactional
     public BudgetResponse createBudget(Long userId, BudgetRequest request) {
+        if (request.getCategory() == null) {
+            throw new IllegalArgumentException("Category is required when creating a budget");
+        }
         String monthYear = resolveMonthYear(request.getMonthYear());
 
         // Enforce unique constraint at service level for a clear error message

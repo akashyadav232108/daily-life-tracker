@@ -1,0 +1,63 @@
+server:
+  port: 8084
+
+spring:
+  application:
+    name: expense-service
+
+  # ── MySQL ──
+  datasource:
+    url: jdbc:mysql://localhost:3306/tracker_expense_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
+    username: root
+    password: ${DB_PASSWORD:root}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: true
+
+  # ── Redis (monthly spend cache — atomic INCR/DECR per category) ──
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+
+  # ── Kafka (producer only — publishes to expense-events topic) ──
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.add.type.headers: false
+
+  # ── Jackson: Java 8 date/time serialization ──
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+    time-zone: UTC
+
+# ── JWT Configuration (shared secret — same as auth-service) ──
+jwt:
+  secret: ${JWT_SECRET:YTJkZmFzZGZhc2RmYXNkZjEyMzQ1Njc4OTAxMjM0NTY3ODkwYXNkZmFzZGY=}
+
+# ── Kafka topic ──
+kafka:
+  topic:
+    expense-events: expense-events
+
+# ── Logging ──
+logging:
+  level:
+    com.tracker.expense: DEBUG
+    org.springframework.security: DEBUG
+    org.springframework.kafka: WARN

@@ -44,19 +44,10 @@ const quickActions = [
     icon: HiCurrencyDollar,
     to: '/expenses',
     color: 'bg-green-500',
-    available: false,
+    available: true,
   },
 ];
 
-// ─── Placeholder widgets for modules not yet implemented ─
-const comingSoonWidgets = [
-  {
-    title: "Today's Spending",
-    description: 'Expense summaries and budget status will appear here.',
-    icon: HiCurrencyDollar,
-    color: 'text-green-400',
-  },
-];
 
 // ─── Page ─────────────────────────────────────────────────────────
 const DashboardPage = () => {
@@ -135,23 +126,18 @@ const DashboardPage = () => {
         </div>
       </section>
 
-      {/* ── Coming-soon service widgets ── */}
+      {/* ── Expense quick-link widget ── */}
       <section>
         <h2 className="mb-4 text-lg font-semibold text-gray-900">Other Modules</h2>
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {comingSoonWidgets.map((widget) => (
-            <div
-              key={widget.title}
-              className="relative overflow-hidden rounded-xl border border-dashed border-gray-300 bg-white p-6"
-            >
-              <widget.icon className={`h-8 w-8 ${widget.color}`} />
-              <h3 className="mt-3 font-semibold text-gray-700">{widget.title}</h3>
-              <p className="mt-1 text-sm text-gray-400">{widget.description}</p>
-              <span className="absolute top-3 right-3 rounded-full bg-gray-100 px-2 py-0.5 text-[10px] font-medium text-gray-500">
-                Coming Soon
-              </span>
-            </div>
-          ))}
+          <button
+            onClick={() => navigate('/expenses')}
+            className="flex flex-col items-start gap-2 rounded-xl border border-gray-200 bg-white p-6 text-left shadow-sm transition-all hover:border-green-300 hover:shadow-md"
+          >
+            <HiCurrencyDollar className="h-8 w-8 text-green-500" />
+            <h3 className="font-semibold text-gray-900">Today's Spending</h3>
+            <p className="text-sm text-gray-500">View expenses, budgets & monthly summary →</p>
+          </button>
         </div>
       </section>
     </div>

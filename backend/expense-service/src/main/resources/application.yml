@@ -37,6 +37,10 @@ spring:
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
+        # Fail fast if Kafka is down — don't block the HTTP request for 60s
+        max.block.ms: 3000
+        request.timeout.ms: 3000
+        delivery.timeout.ms: 5000
 
   # ── Jackson: Java 8 date/time serialization ──
   jackson:

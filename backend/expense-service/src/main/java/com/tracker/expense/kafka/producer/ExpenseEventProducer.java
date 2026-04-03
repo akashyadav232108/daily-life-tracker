@@ -51,6 +51,7 @@ public class ExpenseEventProducer {
 
     /**
      * Publishes an EXPENSE_ADDED event to Kafka after a new transaction is saved.
+     * Fire-and-forget — Kafka being down must NOT fail the expense save.
      */
     public void publishExpenseAdded(Long userId, Long expenseId, BigDecimal amount, Category category) {
         ExpenseAddedEvent event = ExpenseAddedEvent.builder()
@@ -62,19 +63,26 @@ public class ExpenseEventProducer {
                 .timestamp(OffsetDateTime.now())
                 .build();
 
-        kafkaTemplate.send(expenseEventsTopic, String.valueOf(userId), event)
-                .whenComplete((result, ex) -> {
-                    if (ex != null) {
-                        log.error("Failed to publish EXPENSE_ADDED event for expenseId={}: {}",
-                                expenseId, ex.getMessage());
-                    } else {
-                        log.debug("Published EXPENSE_ADDED event: expenseId={}, userId={}", expenseId, userId);
-                    }
-                });
+        try {
+            kafkaTemplate.send(expenseEventsTopic, String.valueOf(userId), event)
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.warn("Failed to publish EXPENSE_ADDED event for expenseId={}: {}",
+                                    expenseId, ex.getMessage());
+                        } else {
+                            log.debug("Published EXPENSE_ADDED event: expenseId={}, userId={}", expenseId, userId);
+                        }
+                    });
+        } catch (Exception ex) {
+            // Kafka is unavailable — log and continue. Expense is already saved in DB.
+            log.warn("Kafka unavailable — skipping EXPENSE_ADDED event for expenseId={}: {}",
+                    expenseId, ex.getMessage());
+        }
     }
 
     /**
      * Publishes a BUDGET_EXCEEDED event when spending crosses 80% or 100% of the monthly limit.
+     * Fire-and-forget — Kafka being down must NOT fail the expense flow.
      */
     public void publishBudgetExceeded(Long userId, Category category,
                                        BigDecimal monthlyLimit, BigDecimal currentSpent,
@@ -89,15 +97,21 @@ public class ExpenseEventProducer {
                 .timestamp(OffsetDateTime.now())
                 .build();
 
-        kafkaTemplate.send(expenseEventsTopic, String.valueOf(userId), event)
-                .whenComplete((result, ex) -> {
-                    if (ex != null) {
-                        log.error("Failed to publish BUDGET_EXCEEDED event for userId={}, category={}: {}",
-                                userId, category, ex.getMessage());
-                    } else {
-                        log.debug("Published BUDGET_EXCEEDED event: userId={}, category={}, percent={}%",
-                                userId, category, percentUsed);
-                    }
-                });
+        try {
+            kafkaTemplate.send(expenseEventsTopic, String.valueOf(userId), event)
+                    .whenComplete((result, ex) -> {
+                        if (ex != null) {
+                            log.warn("Failed to publish BUDGET_EXCEEDED event for userId={}, category={}: {}",
+                                    userId, category, ex.getMessage());
+                        } else {
+                            log.debug("Published BUDGET_EXCEEDED event: userId={}, category={}, percent={}%",
+                                    userId, category, percentUsed);
+                        }
+                    });
+        } catch (Exception ex) {
+            // Kafka is unavailable — log and continue. Budget check already done in DB.
+            log.warn("Kafka unavailable — skipping BUDGET_EXCEEDED event for userId={}, category={}: {}",
+                    userId, category, ex.getMessage());
+        }
     }
 }

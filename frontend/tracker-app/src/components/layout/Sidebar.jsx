@@ -16,7 +16,7 @@ const navItems = [
   { to: '/tasks', icon: HiClipboardDocumentList, label: 'Tasks' },
   { to: '/health', icon: HiHeart, label: 'Health' },
   { to: '/exercise', icon: HiBolt, label: 'Exercise' },
-  { to: '/expenses', icon: HiCurrencyDollar, label: 'Expenses', comingSoon: true },
+  { to: '/expenses', icon: HiCurrencyDollar, label: 'Expenses' },
 ];
 
 const adminItems = [

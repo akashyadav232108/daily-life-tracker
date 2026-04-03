@@ -55,3 +55,64 @@ export const ROLES = {
   ADMIN: 'ADMIN',
   SUPER_ADMIN: 'SUPER_ADMIN',
 };
+
+// ─── Expense / Budget Constants ──────────────────────────────────
+
+export const TRANSACTION_TYPES = [
+  { value: 'EXPENSE', label: 'Expense' },
+  { value: 'INCOME', label: 'Income' },
+];
+
+export const EXPENSE_CATEGORIES = [
+  { value: 'FOOD', label: '🍔 Food' },
+  { value: 'TRANSPORT', label: '🚗 Transport' },
+  { value: 'RENT', label: '🏠 Rent' },
+  { value: 'UTILITIES', label: '💡 Utilities' },
+  { value: 'ENTERTAINMENT', label: '🎬 Entertainment' },
+  { value: 'SHOPPING', label: '🛍️ Shopping' },
+  { value: 'HEALTH', label: '🏥 Health' },
+  { value: 'EDUCATION', label: '📚 Education' },
+  { value: 'SUBSCRIPTIONS', label: '📱 Subscriptions' },
+  { value: 'SALARY', label: '💰 Salary' },
+  { value: 'FREELANCE', label: '💻 Freelance' },
+  { value: 'OTHER', label: '📦 Other' },
+];
+
+export const PAYMENT_METHODS = [
+  { value: 'CASH', label: 'Cash' },
+  { value: 'UPI', label: 'UPI' },
+  { value: 'CARD', label: 'Card' },
+  { value: 'BANK_TRANSFER', label: 'Bank Transfer' },
+];
+
+// Category emoji map (for quick lookup)
+export const CATEGORY_EMOJI = {
+  FOOD: '🍔',
+  TRANSPORT: '🚗',
+  RENT: '🏠',
+  UTILITIES: '💡',
+  ENTERTAINMENT: '🎬',
+  SHOPPING: '🛍️',
+  HEALTH: '🏥',
+  EDUCATION: '📚',
+  SUBSCRIPTIONS: '📱',
+  SALARY: '💰',
+  FREELANCE: '💻',
+  OTHER: '📦',
+};
+
+// Colors for pie chart — one per category
+export const CATEGORY_COLORS = {
+  FOOD: '#f97316',
+  TRANSPORT: '#3b82f6',
+  RENT: '#8b5cf6',
+  UTILITIES: '#eab308',
+  ENTERTAINMENT: '#ec4899',
+  SHOPPING: '#14b8a6',
+  HEALTH: '#22c55e',
+  EDUCATION: '#6366f1',
+  SUBSCRIPTIONS: '#f43f5e',
+  SALARY: '#10b981',
+  FREELANCE: '#0ea5e9',
+  OTHER: '#94a3b8',
+};

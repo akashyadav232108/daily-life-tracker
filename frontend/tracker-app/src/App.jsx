@@ -14,6 +14,7 @@ import ProfilePage from './features/auth/pages/ProfilePage';
 import AdminTasksPage from './features/admin/pages/AdminTasksPage';
 import HealthPage from './features/health/pages/HealthPage';
 import ExercisePage from './features/exercises/pages/ExercisePage';
+import ExpensePage from './features/expenses/pages/ExpensePage';
 
 const App = () => {
   return (
@@ -85,7 +86,7 @@ const App = () => {
         element={
           <ProtectedRoute>
             <PageLayout>
-              <PlaceholderPage title="Expenses" message="Coming in Phase 4 — Expense tracking" />
+              <ExpensePage />
             </PageLayout>
           </ProtectedRoute>
         }

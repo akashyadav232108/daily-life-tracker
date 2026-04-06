@@ -44,5 +44,11 @@ public class ExpenseEvent {
     private BigDecimal currentSpent;
     private Double percentUsed;
 
+    /**
+     * User email — populated for BUDGET_EXCEEDED events so we can send an email alert.
+     * The expense-service producer must include this field.
+     */
+    private String userEmail;
+
     private OffsetDateTime timestamp;
 }

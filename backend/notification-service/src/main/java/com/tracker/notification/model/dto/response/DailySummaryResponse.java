@@ -25,6 +25,7 @@ public class DailySummaryResponse {
     private HealthSummary health;
     private ExerciseSummary exercise;
     private ExpensesSummary expenses;
+    private StreaksSummary streaks;
 
     // ── Nested sub-objects ──────────────────────────────────────────
 
@@ -62,6 +63,15 @@ public class DailySummaryResponse {
     @Builder
     public static class ExpensesSummary {
         private BigDecimal totalSpent;
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class StreaksSummary {
+        private Integer healthLog;
+        private Integer taskComplete;
+        private Integer exercise;
     }
 
     /** Build a DailySummaryResponse from the entity. streaks are added separately by the service. */

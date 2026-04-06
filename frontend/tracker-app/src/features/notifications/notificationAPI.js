@@ -42,7 +42,7 @@ export const fetchUnreadCount = async () => {
  * @param {number} id - notification ID
  */
 export const markAsRead = async (id) => {
-  const res = await notificationAxios.put(`/api/notifications/${id}/read`);
+  const res = await notificationAxios.patch(`/api/notifications/${id}/read`);
   return res.data;
 };
 
@@ -50,7 +50,7 @@ export const markAsRead = async (id) => {
  * Mark all notifications as read.
  */
 export const markAllRead = async () => {
-  const res = await notificationAxios.put('/api/notifications/read-all');
+  const res = await notificationAxios.patch('/api/notifications/read-all');
   return res.data;
 };
 

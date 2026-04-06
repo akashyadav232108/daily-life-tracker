@@ -99,6 +99,20 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.success("All notifications marked as read", null));
     }
 
+    /**
+     * DELETE /api/notifications/{id}
+     * User deletes their own notification.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteOwnNotification(
+            Authentication auth,
+            @PathVariable Long id) {
+
+        Long userId = (Long) auth.getPrincipal();
+        notificationService.deleteOwnNotification(userId, id);
+        return ResponseEntity.ok(ApiResponse.success("Notification deleted", null));
+    }
+
     // ══════════════════════════════════════════════════════════
     //  ADMIN ENDPOINTS
     // ══════════════════════════════════════════════════════════

@@ -139,6 +139,28 @@ public class NotificationService {
         log.debug("All notifications marked as read for user {}", userId);
     }
 
+    /**
+     * DELETE /api/notifications/{id} — user deletes their own notification.
+     */
+    @Transactional
+    public void deleteOwnNotification(Long userId, Long notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .filter(n -> n.getUserId().equals(userId))
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Notification not found or does not belong to this user"));
+
+        if (!notification.getIsRead()) {
+            String key = UNREAD_KEY + userId;
+            String cached = redisTemplate.opsForValue().get(key);
+            if (cached != null && Long.parseLong(cached) > 0) {
+                redisTemplate.opsForValue().decrement(key);
+            }
+        }
+
+        notificationRepository.delete(notification);
+        log.debug("User {} deleted notification [id={}]", userId, notificationId);
+    }
+
     // ══════════════════════════════════════════════════════════
     //  ADMIN API
     // ══════════════════════════════════════════════════════════

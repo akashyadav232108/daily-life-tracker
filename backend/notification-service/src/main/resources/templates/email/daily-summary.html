@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daily Summary — Daily Life Tracker</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
+
+        .wrapper { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+
+        /* ── Header ── */
+        .header { background: linear-gradient(135deg, #6366f1, #4f46e5); padding: 36px 40px; text-align: center; }
+        .header .icon { font-size: 48px; }
+        .header h1 { color: #ffffff; font-size: 24px; font-weight: 700; margin-top: 10px; }
+        .header .date { color: #c7d2fe; font-size: 14px; margin-top: 4px; }
+
+        /* ── Body ── */
+        .body { padding: 32px 40px; }
+        .body > p { color: #374151; font-size: 15px; line-height: 1.7; margin-bottom: 20px; }
+
+        /* ── Section heading ── */
+        .section-title { font-size: 13px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+
+        /* ── Stats grid ── */
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
+        .stat-card { background: #f9fafb; border-radius: 10px; padding: 18px 20px; }
+        .stat-card .stat-icon { font-size: 22px; margin-bottom: 6px; }
+        .stat-card .stat-label { font-size: 12px; color: #9ca3af; margin-bottom: 4px; }
+        .stat-card .stat-value { font-size: 20px; font-weight: 700; color: #111827; }
+        .stat-card .stat-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+        /* ── Status badges ── */
+        .status-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
+        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; }
+        .badge-green  { background: #d1fae5; color: #065f46; }
+        .badge-red    { background: #fee2e2; color: #991b1b; }
+        .badge-blue   { background: #dbeafe; color: #1e40af; }
+        .badge-gray   { background: #f3f4f6; color: #6b7280; }
+
+        /* ── Streaks ── */
+        .streaks { background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 10px; padding: 20px 24px; margin-bottom: 28px; }
+        .streak-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f3e8ff; }
+        .streak-item:last-child { border-bottom: none; }
+        .streak-label { font-size: 14px; color: #374151; }
+        .streak-count { font-size: 16px; font-weight: 700; color: #7c3aed; }
+        .streak-unit  { font-size: 12px; color: #9ca3af; margin-left: 2px; }
+
+        /* ── Motivational ── */
+        .motivational { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-radius: 10px; padding: 20px 24px; margin-bottom: 28px; text-align: center; }
+        .motivational p { font-size: 15px; color: #065f46; font-weight: 500; }
+
+        /* ── CTA ── */
+        .cta-wrap { text-align: center; margin: 4px 0 28px; }
+        .cta-btn { display: inline-block; padding: 14px 32px; border-radius: 8px; background: #6366f1; font-size: 15px; font-weight: 600; text-decoration: none; color: #ffffff; }
+
+        /* ── Footer ── */
+        .footer { padding: 24px 40px; background: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center; }
+        .footer p { font-size: 12px; color: #9ca3af; line-height: 1.6; }
+    </style>
+</head>
+<body>
+<div class="wrapper">
+
+    <!-- Header -->
+    <div class="header">
+        <div class="icon">📊</div>
+        <h1>Your Daily Summary</h1>
+        <div class="date" th:text="${date}"></div>
+    </div>
+
+    <!-- Body -->
+    <div class="body">
+        <p>Here's a recap of everything you accomplished today. Keep the momentum going! 🚀</p>
+
+        <!-- ── Stats Grid ── -->
+        <div class="section-title">Today at a glance</div>
+        <div class="stats-grid">
+
+            <!-- Tasks -->
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-label">Tasks Completed</div>
+                <div class="stat-value" th:text="${tasksCompleted}">0</div>
+                <div class="stat-sub" th:text="'of ' + ${tasksTotal} + ' total'"></div>
+            </div>
+
+            <!-- Spending -->
+            <div class="stat-card">
+                <div class="stat-icon">💸</div>
+                <div class="stat-label">Total Spent</div>
+                <div class="stat-value" th:text="'₹' + ${totalSpent}">₹0</div>
+                <div class="stat-sub">today</div>
+            </div>
+
+        </div>
+
+        <!-- ── Health & Exercise Status ── -->
+        <div class="section-title">Health &amp; Lifestyle</div>
+        <div class="status-row">
+            <span th:if="${healthLogged}"   class="badge badge-green">❤️ Health Logged</span>
+            <span th:unless="${healthLogged}" class="badge badge-red">❤️ Health Not Logged</span>
+
+            <span th:if="${exerciseLogged}"   class="badge badge-blue">🏋️ Exercised</span>
+            <span th:unless="${exerciseLogged}" class="badge badge-gray">🏋️ No Exercise</span>
+
+            <span th:if="${mood != null}" class="badge badge-green"
+                  th:text="'😊 Mood: ' + ${#strings.toLowerCase(mood)}"></span>
+        </div>
+
+        <!-- ── Streaks ── -->
+        <div th:if="${streaks != null and !#lists.isEmpty(streaks)}">
+            <div class="section-title">🔥 Current Streaks</div>
+            <div class="streaks">
+                <div class="streak-item" th:each="streak : ${streaks}">
+                    <span class="streak-label" th:text="${streak.streakType}">HEALTH_LOG</span>
+                    <span>
+                        <span class="streak-count" th:text="${streak.currentCount}">0</span>
+                        <span class="streak-unit">days</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── Motivational message ── -->
+        <div class="motivational">
+            <p th:if="${tasksCompleted > 0 and healthLogged and exerciseLogged}">
+                🌟 Perfect day! Tasks done, health logged, and workout complete. You're crushing it!
+            </p>
+            <p th:if="${tasksCompleted == 0 and !healthLogged and !exerciseLogged}">
+                Tomorrow is a fresh start. Small steps lead to big results. You've got this! 💪
+            </p>
+            <p th:unless="${(tasksCompleted > 0 and healthLogged and exerciseLogged) or (tasksCompleted == 0 and !healthLogged and !exerciseLogged)}">
+                Good effort today! Every day you show up is a win. Rest up and come back stronger 🌙
+            </p>
+        </div>
+
+        <!-- CTA -->
+        <div class="cta-wrap">
+            <a href="http://localhost:3000" class="cta-btn">Open Daily Tracker →</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p>Daily Life Tracker · This summary is sent every evening at 9 PM.<br/>
+           <a href="http://localhost:3000" style="color:#6366f1; text-decoration:none;">Open App</a>
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

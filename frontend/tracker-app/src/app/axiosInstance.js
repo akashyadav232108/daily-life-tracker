@@ -50,8 +50,14 @@ const createAxiosInstance = (baseURL) => {
     async (error) => {
       const originalRequest = error.config;
 
-      // If 401 and we haven't retried yet
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      // Skip token refresh for auth endpoints (login/refresh/register return 401 legitimately)
+      const isAuthEndpoint =
+        originalRequest.url?.includes('/api/auth/login') ||
+        originalRequest.url?.includes('/api/auth/refresh') ||
+        originalRequest.url?.includes('/api/auth/register');
+
+      // If 401 and we haven't retried yet and NOT an auth endpoint
+      if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
         if (isRefreshing) {
           // Queue request while refresh is in progress
           return new Promise((resolve, reject) => {

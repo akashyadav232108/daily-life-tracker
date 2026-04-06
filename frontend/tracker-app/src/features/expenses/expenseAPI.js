@@ -131,6 +131,24 @@ export const deleteBudget = async (id) => {
   return res.data;
 };
 
+// ─── CSV Import API ───────────────────────────────────────────────
+
+/**
+ * Upload a CSV file to bulk-import expenses/income.
+ * Sends as multipart/form-data with field name "file".
+ *
+ * @param {File} file - The CSV File object from an <input type="file">
+ * @returns {Promise} API response: { success, message, data: CsvImportResponse }
+ */
+export const importExpensesFromCsv = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  const res = await expenseAxios.post('/api/expenses/import', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+  return res.data;
+};
+
 // ─── Admin APIs ───────────────────────────────────────────────────
 
 export const adminFetchUserExpenses = async (userId) => {

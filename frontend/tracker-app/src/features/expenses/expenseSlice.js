@@ -133,6 +133,19 @@ export const deleteBudget = createAsyncThunk(
   }
 );
 
+/** Bulk-import expenses from a CSV file */
+export const importExpensesFromCsv = createAsyncThunk(
+  'expenses/importFromCsv',
+  async (file, { rejectWithValue }) => {
+    try {
+      const res = await api.importExpensesFromCsv(file);
+      return res.data; // CsvImportResponse: { totalRows, imported, skipped, errors, expenses }
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || 'CSV import failed');
+    }
+  }
+);
+
 // ─── Slice ───────────────────────────────────────────────────────
 
 const initialState = {
@@ -142,6 +155,10 @@ const initialState = {
   monthlySummary: null,
   loading: false,
   error: null,
+
+  // CSV import state
+  importing: false,
+  importResult: null, // { totalRows, imported, skipped, errors, expenses }
 
   // Active filters
   filters: {
@@ -163,6 +180,9 @@ const expenseSlice = createSlice({
     },
     clearExpenseError: (state) => {
       state.error = null;
+    },
+    clearImportResult: (state) => {
+      state.importResult = null;
     },
   },
   extraReducers: (builder) => {
@@ -255,10 +275,30 @@ const expenseSlice = createSlice({
       .addCase(fetchBudgetStatus.rejected, (state, action) => {
         state.error = action.payload;
       });
+
+    // ── CSV Import ──
+    builder
+      .addCase(importExpensesFromCsv.pending, (state) => {
+        state.importing = true;
+        state.importResult = null;
+        state.error = null;
+      })
+      .addCase(importExpensesFromCsv.fulfilled, (state, action) => {
+        state.importing = false;
+        state.importResult = action.payload;
+        // Prepend newly imported expenses to the list
+        if (action.payload?.expenses?.length) {
+          state.expenses = [...action.payload.expenses, ...state.expenses];
+        }
+      })
+      .addCase(importExpensesFromCsv.rejected, (state, action) => {
+        state.importing = false;
+        state.error = action.payload;
+      });
   },
 });
 
-export const { setFilters, resetFilters, clearExpenseError } = expenseSlice.actions;
+export const { setFilters, resetFilters, clearExpenseError, clearImportResult } = expenseSlice.actions;
 
 // ─── Selectors ───────────────────────────────────────────────────
 export const selectExpenses = (state) => state.expenses.expenses;
@@ -268,6 +308,9 @@ export const selectMonthlySummary = (state) => state.expenses.monthlySummary;
 export const selectExpenseLoading = (state) => state.expenses.loading;
 export const selectExpenseError = (state) => state.expenses.error;
 export const selectExpenseFilters = (state) => state.expenses.filters;
+
+export const selectImporting = (state) => state.expenses.importing;
+export const selectImportResult = (state) => state.expenses.importResult;
 
 // Computed: today's total spend
 export const selectTodaySpend = (state) => {

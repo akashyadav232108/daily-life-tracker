@@ -21,12 +21,13 @@ import ExpenseList from '../components/ExpenseList';
 import BudgetForm from '../components/BudgetForm';
 import BudgetProgress from '../components/BudgetProgress';
 import MonthlySummaryCard from '../components/MonthlySummaryCard';
+import CsvUploadModal from '../components/CsvUploadModal';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import {
   TRANSACTION_TYPES,
   EXPENSE_CATEGORIES,
 } from '../../../utils/constants';
-import { HiPlus, HiAdjustmentsHorizontal, HiXMark } from 'react-icons/hi2';
+import { HiPlus, HiAdjustmentsHorizontal, HiXMark, HiArrowUpTray } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 
 // Derive current month in "YYYY-MM" format
@@ -49,6 +50,7 @@ const ExpensePage = () => {
   const [editingExpense, setEditingExpense] = useState(null);
   const [isBudgetFormOpen, setIsBudgetFormOpen] = useState(false);
   const [editingBudget, setEditingBudget] = useState(null);
+  const [isCsvModalOpen, setIsCsvModalOpen] = useState(false);
 
   // Active tab for the right panel: 'budget' | 'summary'
   const [rightTab, setRightTab] = useState('budget');
@@ -130,14 +132,24 @@ const ExpensePage = () => {
           <h1 className="text-2xl font-bold text-gray-900">Expenses</h1>
           <p className="mt-1 text-sm text-gray-500">Track your income and expenses, set budgets</p>
         </div>
-        <button
-          onClick={openCreateExpense}
-          className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium
-                     text-white shadow-sm hover:bg-primary-dark transition-colors"
-        >
-          <HiPlus className="h-4 w-4" />
-          Add Entry
-        </button>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => setIsCsvModalOpen(true)}
+            className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 py-2.5
+                       text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 transition-colors"
+          >
+            <HiArrowUpTray className="h-4 w-4" />
+            Import CSV
+          </button>
+          <button
+            onClick={openCreateExpense}
+            className="inline-flex items-center gap-2 rounded-lg bg-primary px-4 py-2.5 text-sm font-medium
+                       text-white shadow-sm hover:bg-primary/90 transition-colors"
+          >
+            <HiPlus className="h-4 w-4" />
+            Add Entry
+          </button>
+        </div>
       </div>
 
       {/* ── Quick Stats ── */}
@@ -226,6 +238,11 @@ const ExpensePage = () => {
         onClose={closeBudgetForm}
         editingBudget={editingBudget}
         currentMonth={currentMonth}
+      />
+
+      <CsvUploadModal
+        isOpen={isCsvModalOpen}
+        onClose={() => setIsCsvModalOpen(false)}
       />
     </div>
   );

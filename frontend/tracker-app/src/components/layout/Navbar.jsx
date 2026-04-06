@@ -1,9 +1,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { HiBell, HiUserCircle, HiArrowRightOnRectangle, HiBars3, HiCog6Tooth } from 'react-icons/hi2';
+import { HiUserCircle, HiArrowRightOnRectangle, HiBars3, HiCog6Tooth } from 'react-icons/hi2';
 import useAuth from '../../hooks/useAuth';
 import { clearCredentials } from '../../features/auth/authSlice';
+import NotificationDropdown from '../../features/notifications/components/NotificationDropdown';
 import toast from 'react-hot-toast';
 
 const Navbar = ({ onToggleSidebar }) => {
@@ -50,11 +51,8 @@ const Navbar = ({ onToggleSidebar }) => {
 
       {/* Right — notification bell + user menu */}
       <div className="flex items-center gap-3">
-        {/* Notification bell (placeholder — Phase 5) */}
-        <button className="relative rounded-lg p-2 text-gray-500 hover:bg-gray-100">
-          <HiBell className="h-5 w-5" />
-          {/* Badge will be added in Phase 5 */}
-        </button>
+        {/* Live notification bell with dropdown */}
+        <NotificationDropdown />
 
         {/* User dropdown */}
         <div className="relative" ref={menuRef}>

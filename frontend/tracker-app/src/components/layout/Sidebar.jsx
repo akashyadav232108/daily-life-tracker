@@ -5,10 +5,13 @@ import {
   HiHeart,
   HiBolt,
   HiCurrencyDollar,
+  HiBell,
   HiShieldCheck,
   HiUsers,
   HiXMark,
 } from 'react-icons/hi2';
+import { useSelector } from 'react-redux';
+import { selectUnreadCount } from '../../features/notifications/notificationSlice';
 import useAuth from '../../hooks/useAuth';
 
 const navItems = [
@@ -17,6 +20,7 @@ const navItems = [
   { to: '/health', icon: HiHeart, label: 'Health' },
   { to: '/exercise', icon: HiBolt, label: 'Exercise' },
   { to: '/expenses', icon: HiCurrencyDollar, label: 'Expenses' },
+  { to: '/notifications', icon: HiBell, label: 'Notifications', badge: true },
 ];
 
 const adminItems = [
@@ -26,6 +30,7 @@ const adminItems = [
 
 const Sidebar = ({ isOpen, onClose }) => {
   const { isAdmin } = useAuth();
+  const unreadCount = useSelector(selectUnreadCount);
 
   const linkClass = ({ isActive }) =>
     `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors ${
@@ -81,6 +86,11 @@ const Sidebar = ({ isOpen, onClose }) => {
               {item.comingSoon && (
                 <span className="ml-auto rounded-full bg-gray-700 px-2 py-0.5 text-[10px] text-gray-400">
                   Soon
+                </span>
+              )}
+              {item.badge && unreadCount > 0 && (
+                <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                  {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
             </NavLink>

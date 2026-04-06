@@ -15,6 +15,7 @@ import AdminTasksPage from './features/admin/pages/AdminTasksPage';
 import HealthPage from './features/health/pages/HealthPage';
 import ExercisePage from './features/exercises/pages/ExercisePage';
 import ExpensePage from './features/expenses/pages/ExpensePage';
+import NotificationsPage from './features/notifications/pages/NotificationsPage';
 
 const App = () => {
   return (
@@ -87,6 +88,18 @@ const App = () => {
           <ProtectedRoute>
             <PageLayout>
               <ExpensePage />
+            </PageLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      {/* Notifications */}
+      <Route
+        path="/notifications"
+        element={
+          <ProtectedRoute>
+            <PageLayout>
+              <NotificationsPage />
             </PageLayout>
           </ProtectedRoute>
         }

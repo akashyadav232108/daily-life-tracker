@@ -11,6 +11,7 @@ import TodayTaskSummary from '../components/TodayTaskSummary';
 import UpcomingTasks from '../components/UpcomingTasks';
 import TodayHealthSummary from '../components/TodayHealthSummary';
 import TodayWorkout from '../components/TodayWorkout';
+import StreakWidget from '../../notifications/components/StreakWidget';
 
 // ─── Quick-action cards ─────────────────────────────────────────
 const quickActions = [
@@ -91,6 +92,9 @@ const DashboardPage = () => {
         <TodayHealthSummary />
         <TodayWorkout />
       </div>
+
+      {/* ── Streaks ── */}
+      <StreakWidget />
 
       {/* ── Quick Actions ── */}
       <section>

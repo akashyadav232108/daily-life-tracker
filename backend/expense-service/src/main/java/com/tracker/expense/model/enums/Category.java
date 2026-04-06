@@ -17,5 +17,6 @@ public enum Category {
     SUBSCRIPTIONS,
     SALARY,
     FREELANCE,
+    INVESTMENT,
     OTHER
 }

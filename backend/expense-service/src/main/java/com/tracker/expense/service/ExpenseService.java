@@ -61,7 +61,7 @@ public class ExpenseService {
     // ─── CRUD ─────────────────────────────────────────────────────
 
     @Transactional
-    public ExpenseResponse addExpense(Long userId, ExpenseRequest request) {
+    public ExpenseResponse addExpense(Long userId, String userEmail, ExpenseRequest request) {
         Expense expense = Expense.builder()
                 .userId(userId)
                 .type(request.getType())
@@ -91,7 +91,7 @@ public class ExpenseService {
 
             // ── Budget threshold check ──
             if (newTotal != null) {
-                budgetService.checkAndPublishBudgetAlert(userId, request.getCategory(),
+                budgetService.checkAndPublishBudgetAlert(userId, userEmail, request.getCategory(),
                         monthYear, BigDecimal.valueOf(newTotal), expense.getId());
             }
         }

@@ -39,6 +39,7 @@ public class ExpenseEventProducer {
     @Builder
     public static class BudgetExceededEvent {
         private Long userId;
+        private String userEmail;   // recipient — used by notification-service to send email
         private String category;
         private BigDecimal monthlyLimit;
         private BigDecimal currentSpent;
@@ -84,11 +85,12 @@ public class ExpenseEventProducer {
      * Publishes a BUDGET_EXCEEDED event when spending crosses 80% or 100% of the monthly limit.
      * Fire-and-forget — Kafka being down must NOT fail the expense flow.
      */
-    public void publishBudgetExceeded(Long userId, Category category,
+    public void publishBudgetExceeded(Long userId, String userEmail, Category category,
                                        BigDecimal monthlyLimit, BigDecimal currentSpent,
                                        double percentUsed) {
         BudgetExceededEvent event = BudgetExceededEvent.builder()
                 .userId(userId)
+                .userEmail(userEmail)
                 .category(category.name())
                 .monthlyLimit(monthlyLimit)
                 .currentSpent(currentSpent)

@@ -38,7 +38,8 @@ public class ExpenseController {
             @Valid @RequestBody ExpenseRequest request,
             Authentication auth) {
         Long userId = (Long) auth.getPrincipal();
-        ExpenseResponse response = expenseService.addExpense(userId, request);
+        String userEmail = (String) auth.getCredentials(); // set by JwtAuthenticationFilter
+        ExpenseResponse response = expenseService.addExpense(userId, userEmail, request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Expense added successfully", response));
     }

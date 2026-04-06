@@ -151,7 +151,7 @@ public class BudgetService {
      * Called after every EXPENSE is added.
      * Checks if 80% or 100% threshold is crossed and publishes Kafka event if so.
      */
-    public void checkAndPublishBudgetAlert(Long userId, Category category,
+    public void checkAndPublishBudgetAlert(Long userId, String userEmail, Category category,
                                             String monthYear, BigDecimal currentSpent,
                                             Long expenseId) {
         Optional<Budget> budgetOpt = budgetRepository
@@ -171,7 +171,7 @@ public class BudgetService {
         if (percent >= 100.0 || percent >= 80.0) {
             log.info("Budget alert: userId={} category={} spent={}% of limit={}",
                     userId, category, percent, limit);
-            eventProducer.publishBudgetExceeded(userId, category, limit, currentSpent, percent);
+            eventProducer.publishBudgetExceeded(userId, userEmail, category, limit, currentSpent, percent);
         }
     }
 

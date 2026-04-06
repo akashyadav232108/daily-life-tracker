@@ -4,6 +4,7 @@ import com.tracker.notification.model.entity.DailySummary;
 import com.tracker.notification.model.entity.Streak;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import java.io.UnsupportedEncodingException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -123,7 +124,7 @@ public class EmailService {
     //  PRIVATE HELPER
     // ══════════════════════════════════════════════════════════
 
-    private void send(String to, String subject, String htmlBody) throws MessagingException {
+    private void send(String to, String subject, String htmlBody) throws MessagingException, UnsupportedEncodingException {
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(fromAddress, fromName);

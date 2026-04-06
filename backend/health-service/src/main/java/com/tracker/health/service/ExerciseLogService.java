@@ -1,5 +1,6 @@
 package com.tracker.health.service;
 
+import com.tracker.health.kafka.producer.HealthEventProducer;
 import com.tracker.health.model.dto.request.ExerciseLogRequest;
 import com.tracker.health.model.dto.response.ExerciseLogResponse;
 import com.tracker.health.model.entity.ExerciseLog;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ExerciseLogService {
 
     private final ExerciseLogRepository exerciseLogRepository;
+    private final HealthEventProducer healthEventProducer;
 
     @Transactional
     public ExerciseLogResponse logExercise(Long userId, ExerciseLogRequest request) {
@@ -31,6 +33,15 @@ public class ExerciseLogService {
                 .notes(request.getNotes())
                 .build();
         ExerciseLog saved = exerciseLogRepository.save(log);
+
+        // Notify notification-service via Kafka
+        healthEventProducer.publishExerciseLogged(
+                userId,
+                saved.getLogDate(),
+                saved.getExerciseName(),
+                saved.getMuscleGroup() != null ? saved.getMuscleGroup().name() : null
+        );
+
         return toResponse(saved);
     }
 

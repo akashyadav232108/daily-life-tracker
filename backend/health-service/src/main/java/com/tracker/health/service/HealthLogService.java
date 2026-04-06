@@ -1,5 +1,6 @@
 package com.tracker.health.service;
 
+import com.tracker.health.kafka.producer.HealthEventProducer;
 import com.tracker.health.model.dto.request.CustomMetricLogRequest;
 import com.tracker.health.model.dto.request.HealthLogRequest;
 import com.tracker.health.model.dto.response.HealthLogResponse;
@@ -33,6 +34,7 @@ public class HealthLogService {
     private final HealthLogRepository healthLogRepository;
     private final CustomMetricRepository customMetricRepository;
     private final CustomMetricLogRepository customMetricLogRepository;
+    private final HealthEventProducer healthEventProducer;
 
     // Evict weekly summary so the next read reflects the newly logged data
     @CacheEvict(value = "weeklySummary", key = "#userId")
@@ -50,6 +52,11 @@ public class HealthLogService {
         log.setNotes(request.getNotes());
 
         HealthLog saved = healthLogRepository.save(log);
+
+        // Notify notification-service via Kafka
+        String moodStr = saved.getMood() != null ? saved.getMood().name() : null;
+        healthEventProducer.publishHealthLogged(userId, saved.getLogDate(), moodStr);
+
         return toHealthLogResponseWithCustomMetrics(saved, userId);
     }
 

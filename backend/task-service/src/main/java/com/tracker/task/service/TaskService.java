@@ -2,6 +2,7 @@ package com.tracker.task.service;
 
 import com.tracker.task.exception.AccessDeniedException;
 import com.tracker.task.exception.TaskNotFoundException;
+import com.tracker.task.kafka.producer.TaskEventProducer;
 import com.tracker.task.model.dto.request.CreateTaskRequest;
 import com.tracker.task.model.dto.request.UpdateTaskRequest;
 import com.tracker.task.model.dto.response.TaskResponse;
@@ -31,6 +32,7 @@ public class TaskService {
 
     private final TaskRepository taskRepository;
     private final RecurringTaskService recurringTaskService;
+    private final TaskEventProducer taskEventProducer;
 
     // ══════════════════════════════════════════════════════════
     //  USER OPERATIONS (own tasks only)
@@ -52,6 +54,9 @@ public class TaskService {
 
         Task saved = taskRepository.save(task);
         log.info("Task created [id={}] for user {}", saved.getId(), userId);
+
+        // Notify notification-service via Kafka
+        taskEventProducer.publishTaskCreated(userId, saved.getId(), saved.getTitle());
 
         return TaskResponse.fromEntity(saved);
     }
@@ -169,6 +174,9 @@ public class TaskService {
         taskRepository.save(task);
 
         log.info("Task completed [id={}] for user {}", taskId, userId);
+
+        // Notify notification-service via Kafka
+        taskEventProducer.publishTaskCompleted(userId, taskId, task.getTitle());
 
         // If recurring, create next occurrence atomically
         recurringTaskService.createNextOccurrence(task);

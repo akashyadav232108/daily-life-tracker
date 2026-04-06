@@ -2,19 +2,24 @@ package com.tracker.expense.controller;
 
 import com.tracker.expense.model.dto.request.ExpenseRequest;
 import com.tracker.expense.model.dto.response.ApiResponse;
+import com.tracker.expense.model.dto.response.CsvImportResponse;
 import com.tracker.expense.model.dto.response.ExpenseResponse;
 import com.tracker.expense.model.dto.response.MonthlyBreakdownResponse;
 import com.tracker.expense.model.enums.Category;
 import com.tracker.expense.model.enums.TransactionType;
+import com.tracker.expense.service.CsvImportService;
 import com.tracker.expense.service.ExpenseService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,6 +33,7 @@ import java.util.List;
 public class ExpenseController {
 
     private final ExpenseService expenseService;
+    private final CsvImportService csvImportService;
 
     /**
      * POST /api/expenses
@@ -99,6 +105,44 @@ public class ExpenseController {
         Long userId = (Long) auth.getPrincipal();
         expenseService.deleteExpense(userId, id);
         return ResponseEntity.ok(ApiResponse.success("Expense deleted successfully", null));
+    }
+
+    /**
+     * POST /api/expenses/import
+     * Upload a CSV file to bulk-import expenses/income.
+     *
+     * CSV format (header required):
+     *   date,type,amount,description,category,payment_method
+     *
+     * - date            YYYY-MM-DD       (required)
+     * - type            INCOME|EXPENSE   (required)
+     * - amount          positive number  (required)
+     * - description     free text        (optional)
+     * - category        Category enum    (optional — auto-detected from description)
+     * - payment_method  PaymentMethod    (optional — defaults to OTHER)
+     */
+    @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiResponse<CsvImportResponse>> importFromCsv(
+            @RequestParam("file") MultipartFile file,
+            Authentication auth) throws IOException {
+
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Uploaded file is empty", "EMPTY_FILE"));
+        }
+        String contentType = file.getContentType();
+        if (contentType != null && !contentType.contains("csv") && !contentType.contains("text")) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.error("Only CSV files are accepted", "INVALID_FILE_TYPE"));
+        }
+
+        Long userId = (Long) auth.getPrincipal();
+        String userEmail = (String) auth.getCredentials();
+        CsvImportResponse result = csvImportService.importCsv(userId, userEmail, file);
+
+        String message = "Import complete: " + result.getImported() + " imported, "
+                + result.getSkipped() + " skipped out of " + result.getTotalRows() + " rows";
+        return ResponseEntity.ok(ApiResponse.success(message, result));
     }
 
     /**

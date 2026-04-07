@@ -7,6 +7,8 @@ import PageLayout from './components/layout/PageLayout';
 import LoginPage from './features/auth/pages/LoginPage';
 import RegisterPage from './features/auth/pages/RegisterPage';
 import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage';
+import OtpVerifyPage from './features/auth/pages/OtpVerifyPage';
+import ResetPasswordPage from './features/auth/pages/ResetPasswordPage';
 
 // Protected pages
 import DashboardPage from './features/dashboard/pages/DashboardPage';
@@ -24,7 +26,10 @@ const App = () => {
       {/* ── Public Routes ── */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      {/* Forgot password — 3-step flow */}
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/verify-otp"      element={<OtpVerifyPage />} />
+      <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
       {/* ── Protected Routes (require authentication) ── */}
       <Route

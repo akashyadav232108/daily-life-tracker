@@ -45,14 +45,22 @@ const authAPI = {
   changePassword: (data) => authAxios.put('/api/users/me/password', data),
 
   /**
-   * POST /api/auth/forgot-password — Send OTP to registered email
+   * POST /api/auth/forgot-password — Step 1: Send OTP to registered email.
+   * Also used for "Resend OTP" on the verify-otp page.
    * @param {{ email: string }} data
    */
   forgotPassword: (data) => authAxios.post('/api/auth/forgot-password', data),
 
   /**
-   * POST /api/auth/reset-password — Verify OTP and set new password
-   * @param {{ email: string, otp: string, newPassword: string }} data
+   * POST /api/auth/verify-otp — Step 2: Verify the 6-digit OTP.
+   * Returns { data: resetToken } — a short-lived UUID used in Step 3.
+   * @param {{ email: string, otp: string }} data
+   */
+  verifyOtp: (data) => authAxios.post('/api/auth/verify-otp', data),
+
+  /**
+   * POST /api/auth/reset-password — Step 3: Set a new password using the reset token.
+   * @param {{ resetToken: string, newPassword: string }} data
    */
   resetPassword: (data) => authAxios.post('/api/auth/reset-password', data),
 };

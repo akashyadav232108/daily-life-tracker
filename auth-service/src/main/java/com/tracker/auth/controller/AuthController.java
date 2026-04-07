@@ -5,6 +5,7 @@ import com.tracker.auth.model.dto.request.LoginRequest;
 import com.tracker.auth.model.dto.request.RefreshTokenRequest;
 import com.tracker.auth.model.dto.request.RegisterRequest;
 import com.tracker.auth.model.dto.request.ResetPasswordRequest;
+import com.tracker.auth.model.dto.request.VerifyOtpRequest;
 import com.tracker.auth.model.dto.response.ApiResponse;
 import com.tracker.auth.model.dto.response.AuthResponse;
 import com.tracker.auth.service.AuthService;
@@ -51,29 +52,12 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("Token refreshed successfully", response));
     }
 
-    // ── POST /api/auth/forgot-password ──
-    @PostMapping("/forgot-password")
-    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
-        passwordResetService.forgotPassword(request.getEmail());
-        // Always return success (prevents email enumeration)
-        return ResponseEntity.ok(ApiResponse.success(
-                "If that email is registered, an OTP has been sent. Please check your inbox."));
-    }
-
-    // ── POST /api/auth/reset-password ──
-    @PostMapping("/reset-password")
-    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
-        passwordResetService.resetPassword(request.getEmail(), request.getOtp(), request.getNewPassword());
-        return ResponseEntity.ok(ApiResponse.success("Password reset successfully. You can now log in."));
-    }
-
     // ── POST /api/auth/logout ──
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout(Authentication authentication,
                                                      HttpServletRequest request) {
         Long userId = (Long) authentication.getPrincipal();
 
-        // Extract access token from header to blacklist it
         String bearerToken = request.getHeader("Authorization");
         String accessToken = null;
         if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
@@ -82,5 +66,40 @@ public class AuthController {
 
         authService.logout(userId, accessToken);
         return ResponseEntity.ok(ApiResponse.success("Logged out successfully"));
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    //  FORGOT PASSWORD — 3-STEP FLOW
+    // ══════════════════════════════════════════════════════════════
+
+    /**
+     * Step 1: User submits their email → OTP is sent.
+     * Always returns 200 to prevent user enumeration.
+     */
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.forgotPassword(request.getEmail());
+        return ResponseEntity.ok(ApiResponse.success(
+                "If that email is registered, an OTP has been sent. Please check your inbox."));
+    }
+
+    /**
+     * Step 2: User submits the OTP → verified → returns a short-lived reset token.
+     * The reset token is proof that OTP was verified; used in Step 3 to set new password.
+     */
+    @PostMapping("/verify-otp")
+    public ResponseEntity<ApiResponse<String>> verifyOtp(@Valid @RequestBody VerifyOtpRequest request) {
+        String resetToken = passwordResetService.verifyOtp(request.getEmail(), request.getOtp());
+        return ResponseEntity.ok(ApiResponse.success("OTP verified successfully.", resetToken));
+    }
+
+    /**
+     * Step 3: User submits reset token + new password → password is updated.
+     * The reset token is consumed immediately (single-use).
+     */
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request.getResetToken(), request.getNewPassword());
+        return ResponseEntity.ok(ApiResponse.success("Password reset successfully. You can now log in."));
     }
 }

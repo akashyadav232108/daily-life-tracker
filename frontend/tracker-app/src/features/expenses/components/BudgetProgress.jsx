@@ -116,10 +116,10 @@ const BudgetBar = ({ item, budget, onEdit, onDelete }) => {
 
   return (
     <div className="group">
-      <div className="mb-1.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <span className="text-base">{emoji}</span>
-          <span className="text-sm font-medium text-gray-800">{item.category}</span>
+      <div className="mb-1.5 flex flex-wrap items-center justify-between gap-y-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <span className="shrink-0 text-base">{emoji}</span>
+          <span className="truncate text-sm font-medium text-gray-800">{item.category}</span>
           {percent >= 100 && (
             <span className="rounded-full bg-red-100 px-1.5 py-0.5 text-[10px] font-semibold text-red-600">
               EXCEEDED
@@ -132,7 +132,7 @@ const BudgetBar = ({ item, budget, onEdit, onDelete }) => {
           )}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-2">
           <span className={`text-xs font-semibold ${textColor}`}>
             ₹{Number(item.spent).toLocaleString('en-IN')} / ₹{Number(item.monthlyLimit).toLocaleString('en-IN')}
           </span>

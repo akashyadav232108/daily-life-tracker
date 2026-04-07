@@ -108,7 +108,7 @@ const ExpenseRow = ({ expense, onEdit, onDelete }) => {
       </div>
 
       {/* Amount */}
-      <div className={`flex items-center gap-1 font-semibold ${isIncome ? 'text-green-600' : 'text-red-500'}`}>
+      <div className={`flex shrink-0 items-center gap-1 font-semibold ${isIncome ? 'text-green-600' : 'text-red-500'}`}>
         {isIncome ? <HiArrowUp className="h-3.5 w-3.5" /> : <HiArrowDown className="h-3.5 w-3.5" />}
         <span className="text-sm">₹{Number(expense.amount).toLocaleString('en-IN', { minimumFractionDigits: 2 })}</span>
       </div>

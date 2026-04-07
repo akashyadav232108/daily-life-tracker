@@ -4,7 +4,6 @@ import {
   Cell,
   Tooltip,
   ResponsiveContainer,
-  Legend,
 } from 'recharts';
 import { CATEGORY_COLORS, CATEGORY_EMOJI } from '../../../utils/constants';
 
@@ -82,7 +81,7 @@ const MonthlySummaryCard = ({ summary }) => {
           <p className="mb-3 text-xs font-medium text-gray-500 uppercase tracking-wide">
             Expense Breakdown
           </p>
-          <ResponsiveContainer width="100%" height={220}>
+          <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
                 data={pieData}
@@ -103,10 +102,8 @@ const MonthlySummaryCard = ({ summary }) => {
                   `${CATEGORY_EMOJI[name] || ''} ${name}`,
                 ]}
                 contentStyle={{ borderRadius: '8px', fontSize: '12px' }}
-              />
-              <Legend
-                formatter={(value) => `${CATEGORY_EMOJI[value] || ''} ${value}`}
-                wrapperStyle={{ fontSize: '11px' }}
+                allowEscapeViewBox={{ x: false, y: false }}
+                wrapperStyle={{ zIndex: 10 }}
               />
             </PieChart>
           </ResponsiveContainer>

@@ -13,22 +13,14 @@ const RESEND_COOLDOWN_SECONDS = 120; // 2 minutes
  * Receives email via navigation state from ForgotPasswordPage.
  * If no email in state → redirects back to /forgot-password.
  *
- * Flow:
- * - User enters 6-digit OTP from email
- * - POST /api/auth/verify-otp → backend verifies OTP, returns resetToken
- * - OTP is consumed (deleted from Redis) — single-use
- * - Navigate to /reset-password with resetToken in state
- *
- * Resend OTP:
- * - 2-minute countdown shown after arriving on this page
- * - After countdown → "Resend OTP" button activates
- * - Clicking it calls POST /api/auth/forgot-password (same email)
- * - Backend overwrites previous OTP in Redis, sends new email
- * - Countdown resets to 2 minutes
+ * Error behaviour:
+ * - Wrong OTP (timer still running)  → inline "Incorrect OTP" error, resend stays locked
+ * - Expired OTP (timer hit 0)        → inline "OTP expired" error, resend unlocked immediately
+ * - Never navigates away on failure
  */
 const OtpVerifyPage = () => {
-  const navigate  = useNavigate();
-  const location  = useLocation();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   // Get email passed from ForgotPasswordPage
   const email = location.state?.email;
@@ -41,16 +33,17 @@ const OtpVerifyPage = () => {
     }
   }, [email, navigate]);
 
-  const [otp, setOtp]           = useState('');
-  const [loading, setLoading]   = useState(false);
+  const [otp, setOtp]         = useState('');
+  const [loading, setLoading] = useState(false);
   const [resending, setResending] = useState(false);
+  const [otpError, setOtpError]   = useState(''); // inline error below input
 
   // ── Resend cooldown timer ──────────────────────────────────────
   const [cooldown, setCooldown] = useState(RESEND_COOLDOWN_SECONDS);
   const timerRef = useRef(null);
 
-  useEffect(() => {
-    // Start countdown as soon as page loads
+  const startTimer = () => {
+    clearInterval(timerRef.current);
     timerRef.current = setInterval(() => {
       setCooldown((prev) => {
         if (prev <= 1) {
@@ -60,7 +53,13 @@ const OtpVerifyPage = () => {
         return prev - 1;
       });
     }, 1000);
+  };
+
+  // Start countdown as soon as page loads
+  useEffect(() => {
+    startTimer();
     return () => clearInterval(timerRef.current);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const formatCooldown = (secs) => {
@@ -73,19 +72,37 @@ const OtpVerifyPage = () => {
   const handleVerify = async (e) => {
     e.preventDefault();
     if (otp.length !== 6) {
-      toast.error('Please enter the complete 6-digit OTP.');
+      setOtpError('Please enter the complete 6-digit OTP.');
       return;
     }
+
     setLoading(true);
+    setOtpError('');
+
     try {
       const res = await authAPI.verifyOtp({ email, otp });
-      const resetToken = res.data.data; // returned by ApiResponse<String>
+      const resetToken = res.data.data?.resetToken ?? res.data.data;
       toast.success('OTP verified! Please set your new password.');
-      // Pass resetToken to reset-password page via state
-      navigate('/reset-password', { state: { resetToken }, replace: true });
+      navigate('/reset-password', { state: { email, resetToken }, replace: true });
     } catch (err) {
-      const msg = err.response?.data?.message || 'Invalid or expired OTP. Please try again.';
-      toast.error(msg);
+      const serverMsg = err.response?.data?.message || '';
+
+      // If the 2-min UI timer already ran out → treat as OTP expired
+      if (cooldown === 0) {
+        setOtpError('Your OTP has expired. Please request a new one using the button below.');
+        // resend button is already unlocked (cooldown === 0)
+      } else {
+        // Timer still running → wrong OTP entered
+        setOtpError('Incorrect OTP. Please check the code and try again.');
+      }
+
+      // Also show server message in toast if it contains extra context
+      if (serverMsg && serverMsg !== 'Invalid or expired OTP. Please request a new one.') {
+        toast.error(serverMsg);
+      }
+
+      // Clear the OTP field so user can retype cleanly
+      setOtp('');
     } finally {
       setLoading(false);
     }
@@ -94,20 +111,15 @@ const OtpVerifyPage = () => {
   // ── Resend OTP ─────────────────────────────────────────────────
   const handleResend = async () => {
     setResending(true);
-    setOtp(''); // clear current OTP input
+    setOtp('');
+    setOtpError('');
     try {
       await authAPI.forgotPassword({ email });
       toast.success('New OTP sent! Check your inbox.');
       // Reset cooldown timer
-      clearInterval(timerRef.current);
       setCooldown(RESEND_COOLDOWN_SECONDS);
-      timerRef.current = setInterval(() => {
-        setCooldown((prev) => {
-          if (prev <= 1) { clearInterval(timerRef.current); return 0; }
-          return prev - 1;
-        });
-      }, 1000);
-    } catch (err) {
+      startTimer();
+    } catch {
       toast.error('Failed to resend OTP. Please try again.');
     } finally {
       setResending(false);
@@ -155,14 +167,31 @@ const OtpVerifyPage = () => {
                 type="text"
                 id="otp"
                 value={otp}
-                onChange={(e) => setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                onChange={(e) => {
+                  setOtp(e.target.value.replace(/\D/g, '').slice(0, 6));
+                  if (otpError) setOtpError(''); // clear error as user retypes
+                }}
                 required
                 autoFocus
                 maxLength={6}
                 inputMode="numeric"
                 placeholder="• • • • • •"
-                className="w-full rounded-lg border border-gray-300 px-3.5 py-3 text-center font-mono text-2xl tracking-[0.6em] placeholder:text-gray-300 focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none"
+                className={`w-full rounded-lg border px-3.5 py-3 text-center font-mono text-2xl tracking-[0.6em] placeholder:text-gray-300 focus:ring-2 focus:outline-none transition-colors ${
+                  otpError
+                    ? 'border-red-400 focus:border-red-500 focus:ring-red-200'
+                    : 'border-gray-300 focus:border-primary focus:ring-primary/20'
+                }`}
               />
+
+              {/* Inline error message */}
+              {otpError && (
+                <p className="mt-2 flex items-start gap-1.5 text-sm text-red-600">
+                  <svg className="mt-0.5 h-4 w-4 shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                  </svg>
+                  {otpError}
+                </p>
+              )}
             </div>
 
             {/* Verify button */}

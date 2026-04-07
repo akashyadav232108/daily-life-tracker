@@ -43,6 +43,18 @@ const authAPI = {
    * @param {{ currentPassword: string, newPassword: string }} data
    */
   changePassword: (data) => authAxios.put('/api/users/me/password', data),
+
+  /**
+   * POST /api/auth/forgot-password — Send OTP to registered email
+   * @param {{ email: string }} data
+   */
+  forgotPassword: (data) => authAxios.post('/api/auth/forgot-password', data),
+
+  /**
+   * POST /api/auth/reset-password — Verify OTP and set new password
+   * @param {{ email: string, otp: string, newPassword: string }} data
+   */
+  resetPassword: (data) => authAxios.post('/api/auth/reset-password', data),
 };
 
 export default authAPI;

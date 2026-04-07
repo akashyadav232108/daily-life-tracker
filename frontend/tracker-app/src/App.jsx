@@ -6,6 +6,7 @@ import PageLayout from './components/layout/PageLayout';
 // Auth pages (no layout — standalone)
 import LoginPage from './features/auth/pages/LoginPage';
 import RegisterPage from './features/auth/pages/RegisterPage';
+import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage';
 
 // Protected pages
 import DashboardPage from './features/dashboard/pages/DashboardPage';
@@ -23,6 +24,7 @@ const App = () => {
       {/* ── Public Routes ── */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
       {/* ── Protected Routes (require authentication) ── */}
       <Route

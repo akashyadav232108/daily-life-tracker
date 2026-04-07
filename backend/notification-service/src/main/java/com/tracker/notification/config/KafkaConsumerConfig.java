@@ -3,6 +3,7 @@ package com.tracker.notification.config;
 import com.tracker.notification.model.dto.event.ExpenseEvent;
 import com.tracker.notification.model.dto.event.HealthEvent;
 import com.tracker.notification.model.dto.event.TaskEvent;
+import com.tracker.notification.model.dto.event.UserEvent;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.beans.factory.annotation.Value;
@@ -84,6 +85,22 @@ public class KafkaConsumerConfig {
         ConcurrentKafkaListenerContainerFactory<String, ExpenseEvent> factory =
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(expenseEventConsumerFactory());
+        return factory;
+    }
+
+    // ── UserEvent consumer ────────────────────────────────────────
+
+    @Bean
+    public ConsumerFactory<String, UserEvent> userEventConsumerFactory() {
+        JsonDeserializer<UserEvent> deserializer = new JsonDeserializer<>(UserEvent.class, false);
+        return new DefaultKafkaConsumerFactory<>(baseConsumerProps(), new StringDeserializer(), deserializer);
+    }
+
+    @Bean
+    public ConcurrentKafkaListenerContainerFactory<String, UserEvent> userKafkaListenerContainerFactory() {
+        ConcurrentKafkaListenerContainerFactory<String, UserEvent> factory =
+                new ConcurrentKafkaListenerContainerFactory<>();
+        factory.setConsumerFactory(userEventConsumerFactory());
         return factory;
     }
 }

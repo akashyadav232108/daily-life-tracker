@@ -81,6 +81,38 @@ public class EmailService {
     }
 
     // ══════════════════════════════════════════════════════════
+    //  WELCOME EMAIL
+    // ══════════════════════════════════════════════════════════
+
+    /**
+     * Send a welcome email immediately after a new user registers.
+     * Triggered by UserEventConsumer on USER_REGISTERED events from auth-service.
+     *
+     * @param toEmail   recipient email address
+     * @param fullName  user's full name for the personalised greeting
+     */
+    @Async
+    public void sendWelcomeEmail(String toEmail, String fullName) {
+        if (toEmail == null || toEmail.isBlank()) {
+            log.warn("Welcome email skipped — no email address provided");
+            return;
+        }
+
+        try {
+            Context ctx = new Context();
+            ctx.setVariable("fullName", fullName != null ? fullName : "there");
+
+            String html    = emailTemplateEngine.process("email/welcome", ctx);
+            String subject = "👋 Welcome to Daily Life Tracker!";
+
+            send(toEmail, subject, html);
+            log.info("Welcome email sent to {}", toEmail);
+        } catch (Exception e) {
+            log.error("Failed to send welcome email to {}: {}", toEmail, e.getMessage());
+        }
+    }
+
+    // ══════════════════════════════════════════════════════════
     //  DAILY SUMMARY EMAIL
     // ══════════════════════════════════════════════════════════
 

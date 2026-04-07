@@ -2,6 +2,7 @@ package com.tracker.auth.service;
 
 import com.tracker.auth.exception.InvalidCredentialsException;
 import com.tracker.auth.exception.UserAlreadyExistsException;
+import com.tracker.auth.kafka.producer.UserEventProducer;
 import com.tracker.auth.model.dto.request.LoginRequest;
 import com.tracker.auth.model.dto.request.RefreshTokenRequest;
 import com.tracker.auth.model.dto.request.RegisterRequest;
@@ -26,6 +27,7 @@ public class AuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
+    private final UserEventProducer userEventProducer;
 
     @Value("${jwt.refresh-token-expiration}")
     private long refreshTokenExpirationMs;
@@ -45,6 +47,14 @@ public class AuthService {
                 .build();
 
         User savedUser = userRepository.save(user);
+
+        // Publish event so notification-service can send a welcome email
+        try {
+            userEventProducer.publishUserRegistered(
+                    savedUser.getId(), savedUser.getEmail(), savedUser.getFullName());
+        } catch (Exception e) {
+            log.warn("Failed to publish USER_REGISTERED event for userId={}: {}", savedUser.getId(), e.getMessage());
+        }
 
         return generateAndStoreTokens(savedUser);
     }

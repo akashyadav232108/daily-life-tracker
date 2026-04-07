@@ -50,7 +50,13 @@ public class SecurityConfig {
                 // Endpoint authorization rules
                 .authorizeHttpRequests(auth -> auth
                         // Public endpoints — no auth required
-                        .requestMatchers("/api/auth/register", "/api/auth/login", "/api/auth/refresh").permitAll()
+                        .requestMatchers(
+                                "/api/auth/register",
+                                "/api/auth/login",
+                                "/api/auth/refresh",
+                                "/api/auth/forgot-password",
+                                "/api/auth/reset-password"
+                        ).permitAll()
 
                         // Logout requires authentication (need token to blacklist)
                         .requestMatchers("/api/auth/logout").authenticated()

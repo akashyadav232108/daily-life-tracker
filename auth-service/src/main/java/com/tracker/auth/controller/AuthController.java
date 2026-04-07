@@ -1,11 +1,14 @@
 package com.tracker.auth.controller;
 
+import com.tracker.auth.model.dto.request.ForgotPasswordRequest;
 import com.tracker.auth.model.dto.request.LoginRequest;
 import com.tracker.auth.model.dto.request.RefreshTokenRequest;
 import com.tracker.auth.model.dto.request.RegisterRequest;
+import com.tracker.auth.model.dto.request.ResetPasswordRequest;
 import com.tracker.auth.model.dto.response.ApiResponse;
 import com.tracker.auth.model.dto.response.AuthResponse;
 import com.tracker.auth.service.AuthService;
+import com.tracker.auth.service.PasswordResetService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthController {
 
     private final AuthService authService;
+    private final PasswordResetService passwordResetService;
 
     // ── POST /api/auth/register ──
     @PostMapping("/register")
@@ -45,6 +49,22 @@ public class AuthController {
     public ResponseEntity<ApiResponse<AuthResponse>> refresh(@Valid @RequestBody RefreshTokenRequest request) {
         AuthResponse response = authService.refreshToken(request);
         return ResponseEntity.ok(ApiResponse.success("Token refreshed successfully", response));
+    }
+
+    // ── POST /api/auth/forgot-password ──
+    @PostMapping("/forgot-password")
+    public ResponseEntity<ApiResponse<Void>> forgotPassword(@Valid @RequestBody ForgotPasswordRequest request) {
+        passwordResetService.forgotPassword(request.getEmail());
+        // Always return success (prevents email enumeration)
+        return ResponseEntity.ok(ApiResponse.success(
+                "If that email is registered, an OTP has been sent. Please check your inbox."));
+    }
+
+    // ── POST /api/auth/reset-password ──
+    @PostMapping("/reset-password")
+    public ResponseEntity<ApiResponse<Void>> resetPassword(@Valid @RequestBody ResetPasswordRequest request) {
+        passwordResetService.resetPassword(request.getEmail(), request.getOtp(), request.getNewPassword());
+        return ResponseEntity.ok(ApiResponse.success("Password reset successfully. You can now log in."));
     }
 
     // ── POST /api/auth/logout ──

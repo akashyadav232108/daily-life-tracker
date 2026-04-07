@@ -3,188 +3,124 @@
 <head>
     <meta charset="UTF-8"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!--[if mso]>
+    <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+    <![endif]-->
     <title>Welcome to Daily Life Tracker</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, sans-serif;
-            background-color: #f0f4f8;
-            color: #1a202c;
-        }
-        .wrapper {
-            max-width: 600px;
-            margin: 40px auto;
-            background: #ffffff;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
-        }
-        /* ── Header ── */
-        .header {
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            padding: 48px 40px 36px;
-            text-align: center;
-        }
-        .header .logo {
-            font-size: 42px;
-            margin-bottom: 12px;
-        }
-        .header h1 {
-            color: #ffffff;
-            font-size: 26px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-        }
-        .header p {
-            color: rgba(255,255,255,0.85);
-            font-size: 15px;
-            margin-top: 6px;
-        }
-        /* ── Body ── */
-        .body {
-            padding: 40px 40px 32px;
-        }
-        .greeting {
-            font-size: 22px;
-            font-weight: 700;
-            color: #1a202c;
-            margin-bottom: 16px;
-        }
-        .intro {
-            font-size: 15px;
-            line-height: 1.7;
-            color: #4a5568;
-            margin-bottom: 32px;
-        }
-        /* ── Feature cards ── */
-        .features {
-            display: flex;
-            flex-direction: column;
-            gap: 14px;
-            margin-bottom: 36px;
-        }
-        .feature {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            background: #f7f8fc;
-            border-radius: 10px;
-            padding: 16px 18px;
-        }
-        .feature .icon {
-            font-size: 24px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-        .feature .text h3 {
-            font-size: 15px;
-            font-weight: 600;
-            color: #1a202c;
-            margin-bottom: 2px;
-        }
-        .feature .text p {
-            font-size: 13px;
-            color: #718096;
-            line-height: 1.5;
-        }
-        /* ── CTA button ── */
-        .cta-wrapper {
-            text-align: center;
-            margin-bottom: 36px;
-        }
-        .cta-btn {
-            display: inline-block;
-            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
-            color: #ffffff !important;
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 600;
-            padding: 14px 36px;
-            border-radius: 50px;
-            letter-spacing: 0.3px;
-        }
-        /* ── Footer ── */
-        .footer {
-            background: #f7f8fc;
-            padding: 24px 40px;
-            text-align: center;
-            border-top: 1px solid #e8ecf0;
-        }
-        .footer p {
-            font-size: 12px;
-            color: #a0aec0;
-            line-height: 1.6;
-        }
-    </style>
 </head>
-<body>
-<div class="wrapper">
+<!--
+    All CSS is intentionally inline.
+    Gmail App (iOS/Android) strips <style> blocks entirely.
+    Table-based layout is used for full email client compatibility.
+-->
+<body style="margin:0;padding:0;background-color:#f0f4f8;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Arial,sans-serif;">
 
-    <!-- Header -->
-    <div class="header">
-        <div class="logo">🧭</div>
-        <h1>Welcome to Daily Life Tracker</h1>
-        <p>Your personal hub for health, tasks, and finances</p>
-    </div>
+<!-- Outer wrapper -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f0f4f8;padding:40px 0;">
+    <tr>
+        <td align="center" valign="top">
 
-    <!-- Body -->
-    <div class="body">
+            <!-- Card (max 600px) -->
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;">
 
-        <p class="greeting">Hi <span th:text="${fullName}">there</span> 👋</p>
+                <!-- ── Header ── -->
+                <tr>
+                    <td align="center" style="background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);padding:48px 40px 36px;text-align:center;">
+                        <div style="font-size:42px;line-height:1;margin-bottom:12px;">🧭</div>
+                        <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;letter-spacing:-0.5px;">Welcome to Daily Life Tracker</h1>
+                        <p style="margin:8px 0 0;color:rgba(255,255,255,0.85);font-size:15px;">Your personal hub for health, tasks, and finances</p>
+                    </td>
+                </tr>
 
-        <p class="intro">
-            We're thrilled to have you on board! Daily Life Tracker helps you stay on top of
-            everything that matters — from your health goals and daily tasks to your budget and
-            spending habits. Your journey to a more organised life starts right now.
-        </p>
+                <!-- ── Body ── -->
+                <tr>
+                    <td style="padding:40px 40px 32px;">
 
-        <!-- Feature highlights -->
-        <div class="features">
-            <div class="feature">
-                <div class="icon">✅</div>
-                <div class="text">
-                    <h3>Task Manager</h3>
-                    <p>Create, organise, and complete your daily tasks. Build streaks and stay consistent.</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon">💪</div>
-                <div class="text">
-                    <h3>Health &amp; Exercise Logs</h3>
-                    <p>Track your mood, water intake, sleep, calories, and workout sessions every day.</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon">💰</div>
-                <div class="text">
-                    <h3>Expense Tracker</h3>
-                    <p>Set monthly budgets by category and get instant alerts when you're close to the limit.</p>
-                </div>
-            </div>
-            <div class="feature">
-                <div class="icon">🔔</div>
-                <div class="text">
-                    <h3>Smart Notifications</h3>
-                    <p>Personalised reminders, budget alerts, streak milestones, and daily summaries.</p>
-                </div>
-            </div>
-        </div>
+                        <!-- Greeting -->
+                        <p style="margin:0 0 16px;font-size:22px;font-weight:700;color:#1a202c;">
+                            Hi <span th:text="${fullName}">there</span> 👋
+                        </p>
+                        <p style="margin:0 0 32px;font-size:15px;color:#4a5568;line-height:1.7;">
+                            We're thrilled to have you on board! Daily Life Tracker helps you stay on top of
+                            everything that matters — from your health goals and daily tasks to your budget and
+                            spending habits. Your journey to a more organised life starts right now.
+                        </p>
 
-        <!-- CTA -->
-        <div class="cta-wrapper">
-            <a href="http://localhost:3000/dashboard" class="cta-btn">Go to Dashboard →</a>
-        </div>
+                        <!-- Feature: Task Manager -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px;background-color:#f7f8fc;border-radius:10px;">
+                            <tr>
+                                <td width="52" valign="top" style="padding:16px 0 16px 18px;font-size:24px;line-height:1;">✅</td>
+                                <td valign="top" style="padding:16px 18px 16px 0;">
+                                    <p style="margin:0 0 2px;font-size:15px;font-weight:600;color:#1a202c;">Task Manager</p>
+                                    <p style="margin:0;font-size:13px;color:#718096;line-height:1.5;">Create, organise, and complete your daily tasks. Build streaks and stay consistent.</p>
+                                </td>
+                            </tr>
+                        </table>
 
-    </div>
+                        <!-- Feature: Health -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px;background-color:#f7f8fc;border-radius:10px;">
+                            <tr>
+                                <td width="52" valign="top" style="padding:16px 0 16px 18px;font-size:24px;line-height:1;">💪</td>
+                                <td valign="top" style="padding:16px 18px 16px 0;">
+                                    <p style="margin:0 0 2px;font-size:15px;font-weight:600;color:#1a202c;">Health &amp; Exercise Logs</p>
+                                    <p style="margin:0;font-size:13px;color:#718096;line-height:1.5;">Track your mood, water intake, sleep, calories, and workout sessions every day.</p>
+                                </td>
+                            </tr>
+                        </table>
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>
-            You're receiving this email because you registered at Daily Life Tracker.<br/>
-            © 2026 Daily Life Tracker. All rights reserved.
-        </p>
-    </div>
+                        <!-- Feature: Expense -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:14px;background-color:#f7f8fc;border-radius:10px;">
+                            <tr>
+                                <td width="52" valign="top" style="padding:16px 0 16px 18px;font-size:24px;line-height:1;">💰</td>
+                                <td valign="top" style="padding:16px 18px 16px 0;">
+                                    <p style="margin:0 0 2px;font-size:15px;font-weight:600;color:#1a202c;">Expense Tracker</p>
+                                    <p style="margin:0;font-size:13px;color:#718096;line-height:1.5;">Set monthly budgets by category and get instant alerts when you're close to the limit.</p>
+                                </td>
+                            </tr>
+                        </table>
 
-</div>
+                        <!-- Feature: Notifications -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:36px;background-color:#f7f8fc;border-radius:10px;">
+                            <tr>
+                                <td width="52" valign="top" style="padding:16px 0 16px 18px;font-size:24px;line-height:1;">🔔</td>
+                                <td valign="top" style="padding:16px 18px 16px 0;">
+                                    <p style="margin:0 0 2px;font-size:15px;font-weight:600;color:#1a202c;">Smart Notifications</p>
+                                    <p style="margin:0;font-size:13px;color:#718096;line-height:1.5;">Personalised reminders, budget alerts, streak milestones, and daily summaries.</p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- CTA Button -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:36px;">
+                            <tr>
+                                <td align="center">
+                                    <a href="http://localhost:3000/dashboard"
+                                       style="display:inline-block;background:linear-gradient(135deg,#6366f1 0%,#8b5cf6 100%);color:#ffffff;text-decoration:none;font-size:16px;font-weight:600;padding:14px 36px;border-radius:50px;letter-spacing:0.3px;">
+                                        Go to Dashboard →
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+                <!-- ── Footer ── -->
+                <tr>
+                    <td style="background-color:#f7f8fc;border-top:1px solid #e8ecf0;padding:24px 40px;text-align:center;">
+                        <p style="margin:0;font-size:12px;color:#a0aec0;line-height:1.6;">
+                            You're receiving this email because you registered at Daily Life Tracker.<br/>
+                            &copy; 2026 Daily Life Tracker. All rights reserved.
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+            <!-- /Card -->
+
+        </td>
+    </tr>
+</table>
+
 </body>
 </html>

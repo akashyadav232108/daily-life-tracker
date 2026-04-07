@@ -1,137 +1,140 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!--[if mso]>
+    <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+    <![endif]-->
     <title>Budget Alert — Daily Life Tracker</title>
-    <style>
-        /* ── Reset ── */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-
-        /* ── Wrapper ── */
-        .wrapper { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-
-        /* ── Header ── */
-        .header { padding: 36px 40px; text-align: center; }
-        .header-exceeded  { background: linear-gradient(135deg, #ef4444, #dc2626); }
-        .header-warning   { background: linear-gradient(135deg, #f59e0b, #d97706); }
-        .header h1 { color: #ffffff; font-size: 26px; font-weight: 700; margin-top: 12px; }
-        .header .icon { font-size: 48px; }
-
-        /* ── Body ── */
-        .body { padding: 36px 40px; }
-        .body p { color: #374151; font-size: 16px; line-height: 1.7; margin-bottom: 16px; }
-
-        /* ── Alert card ── */
-        .alert-card { border-radius: 10px; padding: 24px; margin: 24px 0; text-align: center; }
-        .alert-card-exceeded { background-color: #fef2f2; border: 2px solid #fca5a5; }
-        .alert-card-warning  { background-color: #fffbeb; border: 2px solid #fcd34d; }
-        .alert-card .percent { font-size: 52px; font-weight: 800; }
-        .percent-exceeded { color: #dc2626; }
-        .percent-warning  { color: #d97706; }
-        .alert-card .label { font-size: 15px; color: #6b7280; margin-top: 4px; }
-        .alert-card .category-badge {
-            display: inline-block;
-            margin-top: 12px;
-            padding: 6px 16px;
-            border-radius: 999px;
-            font-size: 13px;
-            font-weight: 600;
-            color: #ffffff;
-        }
-        .badge-exceeded { background-color: #dc2626; }
-        .badge-warning  { background-color: #d97706; }
-
-        /* ── Tips ── */
-        .tips { background: #f9fafb; border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
-        .tips h3 { font-size: 14px; font-weight: 600; color: #111827; margin-bottom: 10px; }
-        .tips ul { list-style: none; }
-        .tips ul li { font-size: 14px; color: #6b7280; padding: 4px 0; }
-        .tips ul li::before { content: "→ "; color: #9ca3af; }
-
-        /* ── CTA button ── */
-        .cta-wrap { text-align: center; margin: 28px 0; }
-        .cta-btn {
-            display: inline-block;
-            padding: 14px 32px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 600;
-            text-decoration: none;
-            color: #ffffff;
-        }
-        .cta-exceeded { background-color: #dc2626; }
-        .cta-warning  { background-color: #d97706; }
-
-        /* ── Footer ── */
-        .footer { padding: 24px 40px; background: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center; }
-        .footer p { font-size: 12px; color: #9ca3af; line-height: 1.6; }
-    </style>
 </head>
-<body>
-<div class="wrapper">
+<!--
+    All CSS is intentionally inline.
+    Gmail App (iOS/Android) strips <style> blocks entirely.
+    Table-based layout is used for full email client compatibility.
+-->
+<body style="margin:0;padding:0;background-color:#f4f6f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
 
-    <!-- Header -->
-    <div class="header" th:classappend="${isExceeded} ? 'header-exceeded' : 'header-warning'">
-        <div class="icon" th:text="${isExceeded} ? '🚨' : '⚠️'"></div>
-        <h1 th:text="${isExceeded} ? 'Budget Exceeded!' : 'Budget Alert'"></h1>
-    </div>
+<!-- Outer wrapper -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f6f9;padding:40px 0;">
+    <tr>
+        <td align="center" valign="top">
 
-    <!-- Body -->
-    <div class="body">
-        <p>Hi there,</p>
-        <p th:if="${isExceeded}">
-            Your <strong th:text="${category}"></strong> budget has been <strong>fully exceeded</strong>
-            this month. You may want to review your recent expenses and adjust your spending.
-        </p>
-        <p th:unless="${isExceeded}">
-            You're getting close to your <strong th:text="${category}"></strong> budget limit this month.
-            A little more mindfulness could help you stay on track!
-        </p>
+            <!-- Card (max 600px) -->
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;">
 
-        <!-- Alert card -->
-        <div class="alert-card" th:classappend="${isExceeded} ? 'alert-card-exceeded' : 'alert-card-warning'">
-            <div class="percent" th:classappend="${isExceeded} ? 'percent-exceeded' : 'percent-warning'"
-                 th:text="${percentUsed} + '%'"></div>
-            <div class="label">of your monthly budget used</div>
-            <span class="category-badge" th:classappend="${isExceeded} ? 'badge-exceeded' : 'badge-warning'"
-                  th:text="${category}"></span>
-        </div>
+                <!-- ── Header (red if exceeded, amber if warning) ── -->
+                <tr>
+                    <!-- Exceeded: #ef4444 → #dc2626 | Warning: #f59e0b → #d97706 -->
+                    <td align="center"
+                        th:style="${isExceeded}
+                            ? 'background:linear-gradient(135deg,#ef4444,#dc2626);padding:36px 40px;text-align:center;'
+                            : 'background:linear-gradient(135deg,#f59e0b,#d97706);padding:36px 40px;text-align:center;'">
+                        <div style="font-size:48px;line-height:1;margin-bottom:12px;"
+                             th:text="${isExceeded} ? '🚨' : '⚠️'">⚠️</div>
+                        <h1 style="margin:0;color:#ffffff;font-size:26px;font-weight:700;"
+                            th:text="${isExceeded} ? 'Budget Exceeded!' : 'Budget Alert'">Budget Alert</h1>
+                    </td>
+                </tr>
 
-        <!-- Tips -->
-        <div class="tips">
-            <h3>💡 Quick tips to stay on budget</h3>
-            <ul>
-                <li>Review your recent transactions in the app</li>
-                <li>Identify non-essential spending to cut back</li>
-                <li>Adjust your budget limit if needed</li>
-                <li>Set smaller weekly spending goals</li>
-            </ul>
-        </div>
+                <!-- ── Body ── -->
+                <tr>
+                    <td style="padding:36px 40px;">
 
-        <!-- CTA -->
-        <div class="cta-wrap">
-            <a href="http://localhost:3000/expenses"
-               class="cta-btn"
-               th:classappend="${isExceeded} ? 'cta-exceeded' : 'cta-warning'">
-                View My Expenses →
-            </a>
-        </div>
+                        <p style="margin:0 0 16px;font-size:16px;color:#374151;line-height:1.7;">Hi there,</p>
 
-        <p style="font-size:14px; color:#6b7280;">
-            This alert was triggered automatically when your spending reached
-            <strong th:text="${percentUsed} + '%'"></strong> of your
-            <strong th:text="${category}"></strong> budget.
-        </p>
-    </div>
+                        <p th:if="${isExceeded}"
+                           style="margin:0 0 16px;font-size:16px;color:#374151;line-height:1.7;">
+                            Your <strong th:text="${category}">Category</strong> budget has been
+                            <strong>fully exceeded</strong> this month. You may want to review your recent
+                            expenses and adjust your spending.
+                        </p>
+                        <p th:unless="${isExceeded}"
+                           style="margin:0 0 16px;font-size:16px;color:#374151;line-height:1.7;">
+                            You're getting close to your <strong th:text="${category}">Category</strong>
+                            budget limit this month. A little more mindfulness could help you stay on track!
+                        </p>
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>Daily Life Tracker · You're receiving this because budget alerts are enabled.<br/>
-           <a href="http://localhost:3000" style="color:#6366f1; text-decoration:none;">Open App</a></p>
-    </div>
+                        <!-- Alert card (red if exceeded, amber if warning) -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;">
+                            <tr>
+                                <!-- Exceeded border: #fca5a5 | Warning border: #fcd34d -->
+                                <td align="center"
+                                    th:style="${isExceeded}
+                                        ? 'background-color:#fef2f2;border:2px solid #fca5a5;border-radius:10px;padding:24px;text-align:center;'
+                                        : 'background-color:#fffbeb;border:2px solid #fcd34d;border-radius:10px;padding:24px;text-align:center;'">
 
-</div>
+                                    <!-- Percentage -->
+                                    <p th:text="${percentUsed} + '%'"
+                                       th:style="${isExceeded}
+                                           ? 'margin:0;font-size:52px;font-weight:800;color:#dc2626;line-height:1;'
+                                           : 'margin:0;font-size:52px;font-weight:800;color:#d97706;line-height:1;'">85%</p>
+
+                                    <p style="margin:6px 0 12px;font-size:15px;color:#6b7280;">of your monthly budget used</p>
+
+                                    <!-- Category badge -->
+                                    <span th:text="${category}"
+                                          th:style="${isExceeded}
+                                              ? 'display:inline-block;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;color:#ffffff;background-color:#dc2626;'
+                                              : 'display:inline-block;padding:6px 16px;border-radius:999px;font-size:13px;font-weight:600;color:#ffffff;background-color:#d97706;'">
+                                        FOOD
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Tips box -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:24px 0;background-color:#f9fafb;border-radius:8px;">
+                            <tr>
+                                <td style="padding:20px 24px;">
+                                    <p style="margin:0 0 10px;font-size:14px;font-weight:600;color:#111827;">💡 Quick tips to stay on budget</p>
+                                    <p style="margin:0 0 6px;font-size:14px;color:#6b7280;">&rarr; Review your recent transactions in the app</p>
+                                    <p style="margin:0 0 6px;font-size:14px;color:#6b7280;">&rarr; Identify non-essential spending to cut back</p>
+                                    <p style="margin:0 0 6px;font-size:14px;color:#6b7280;">&rarr; Adjust your budget limit if needed</p>
+                                    <p style="margin:0;font-size:14px;color:#6b7280;">&rarr; Set smaller weekly spending goals</p>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- CTA Button -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin:28px 0;">
+                            <tr>
+                                <td align="center">
+                                    <a href="http://localhost:3000/expenses"
+                                       th:style="${isExceeded}
+                                           ? 'display:inline-block;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;text-decoration:none;color:#ffffff;background-color:#dc2626;'
+                                           : 'display:inline-block;padding:14px 32px;border-radius:8px;font-size:15px;font-weight:600;text-decoration:none;color:#ffffff;background-color:#d97706;'">
+                                        View My Expenses →
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <p style="margin:0;font-size:14px;color:#6b7280;line-height:1.6;">
+                            This alert was triggered automatically when your spending reached
+                            <strong th:text="${percentUsed} + '%'">85%</strong> of your
+                            <strong th:text="${category}">Category</strong> budget.
+                        </p>
+
+                    </td>
+                </tr>
+
+                <!-- ── Footer ── -->
+                <tr>
+                    <td style="background-color:#f9fafb;border-top:1px solid #e5e7eb;padding:24px 40px;text-align:center;">
+                        <p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.6;">
+                            Daily Life Tracker &middot; You're receiving this because budget alerts are enabled.<br/>
+                            <a href="http://localhost:3000" style="color:#6366f1;text-decoration:none;">Open App</a>
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+            <!-- /Card -->
+
+        </td>
+    </tr>
+</table>
+
 </body>
 </html>

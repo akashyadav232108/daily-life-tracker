@@ -1,154 +1,182 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <!--[if mso]>
+    <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
+    <![endif]-->
     <title>Daily Summary — Daily Life Tracker</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background-color: #f4f6f9; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-
-        .wrapper { max-width: 600px; margin: 40px auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-
-        /* ── Header ── */
-        .header { background: linear-gradient(135deg, #6366f1, #4f46e5); padding: 36px 40px; text-align: center; }
-        .header .icon { font-size: 48px; }
-        .header h1 { color: #ffffff; font-size: 24px; font-weight: 700; margin-top: 10px; }
-        .header .date { color: #c7d2fe; font-size: 14px; margin-top: 4px; }
-
-        /* ── Body ── */
-        .body { padding: 32px 40px; }
-        .body > p { color: #374151; font-size: 15px; line-height: 1.7; margin-bottom: 20px; }
-
-        /* ── Section heading ── */
-        .section-title { font-size: 13px; font-weight: 600; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
-
-        /* ── Stats grid ── */
-        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 28px; }
-        .stat-card { background: #f9fafb; border-radius: 10px; padding: 18px 20px; }
-        .stat-card .stat-icon { font-size: 22px; margin-bottom: 6px; }
-        .stat-card .stat-label { font-size: 12px; color: #9ca3af; margin-bottom: 4px; }
-        .stat-card .stat-value { font-size: 20px; font-weight: 700; color: #111827; }
-        .stat-card .stat-sub { font-size: 12px; color: #6b7280; margin-top: 2px; }
-
-        /* ── Status badges ── */
-        .status-row { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 28px; }
-        .badge { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; border-radius: 999px; font-size: 13px; font-weight: 600; }
-        .badge-green  { background: #d1fae5; color: #065f46; }
-        .badge-red    { background: #fee2e2; color: #991b1b; }
-        .badge-blue   { background: #dbeafe; color: #1e40af; }
-        .badge-gray   { background: #f3f4f6; color: #6b7280; }
-
-        /* ── Streaks ── */
-        .streaks { background: #faf5ff; border: 1px solid #e9d5ff; border-radius: 10px; padding: 20px 24px; margin-bottom: 28px; }
-        .streak-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid #f3e8ff; }
-        .streak-item:last-child { border-bottom: none; }
-        .streak-label { font-size: 14px; color: #374151; }
-        .streak-count { font-size: 16px; font-weight: 700; color: #7c3aed; }
-        .streak-unit  { font-size: 12px; color: #9ca3af; margin-left: 2px; }
-
-        /* ── Motivational ── */
-        .motivational { background: linear-gradient(135deg, #ecfdf5, #d1fae5); border-radius: 10px; padding: 20px 24px; margin-bottom: 28px; text-align: center; }
-        .motivational p { font-size: 15px; color: #065f46; font-weight: 500; }
-
-        /* ── CTA ── */
-        .cta-wrap { text-align: center; margin: 4px 0 28px; }
-        .cta-btn { display: inline-block; padding: 14px 32px; border-radius: 8px; background: #6366f1; font-size: 15px; font-weight: 600; text-decoration: none; color: #ffffff; }
-
-        /* ── Footer ── */
-        .footer { padding: 24px 40px; background: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center; }
-        .footer p { font-size: 12px; color: #9ca3af; line-height: 1.6; }
-    </style>
 </head>
-<body>
-<div class="wrapper">
+<!--
+    All CSS is intentionally inline.
+    Gmail App (iOS/Android) strips <style> blocks entirely.
+    Table-based layout is used for full email client compatibility.
+    display:grid and display:flex are replaced with table columns.
+-->
+<body style="margin:0;padding:0;background-color:#f4f6f9;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Arial,sans-serif;">
 
-    <!-- Header -->
-    <div class="header">
-        <div class="icon">📊</div>
-        <h1>Your Daily Summary</h1>
-        <div class="date" th:text="${date}"></div>
-    </div>
+<!-- Outer wrapper -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f4f6f9;padding:40px 0;">
+    <tr>
+        <td align="center" valign="top">
 
-    <!-- Body -->
-    <div class="body">
-        <p>Here's a recap of everything you accomplished today. Keep the momentum going! 🚀</p>
+            <!-- Card (max 600px) -->
+            <table width="600" cellpadding="0" cellspacing="0" border="0" style="max-width:600px;width:100%;background-color:#ffffff;border-radius:12px;overflow:hidden;">
 
-        <!-- ── Stats Grid ── -->
-        <div class="section-title">Today at a glance</div>
-        <div class="stats-grid">
+                <!-- ── Header ── -->
+                <tr>
+                    <td align="center" style="background:linear-gradient(135deg,#6366f1,#4f46e5);padding:36px 40px;text-align:center;">
+                        <div style="font-size:48px;line-height:1;margin-bottom:10px;">📊</div>
+                        <h1 style="margin:0;color:#ffffff;font-size:24px;font-weight:700;">Your Daily Summary</h1>
+                        <p th:text="${date}" style="margin:6px 0 0;color:#c7d2fe;font-size:14px;">2026-04-07</p>
+                    </td>
+                </tr>
 
-            <!-- Tasks -->
-            <div class="stat-card">
-                <div class="stat-icon">✅</div>
-                <div class="stat-label">Tasks Completed</div>
-                <div class="stat-value" th:text="${tasksCompleted}">0</div>
-                <div class="stat-sub" th:text="'of ' + ${tasksTotal} + ' total'"></div>
-            </div>
+                <!-- ── Body ── -->
+                <tr>
+                    <td style="padding:32px 40px;">
 
-            <!-- Spending -->
-            <div class="stat-card">
-                <div class="stat-icon">💸</div>
-                <div class="stat-label">Total Spent</div>
-                <div class="stat-value" th:text="'₹' + ${totalSpent}">₹0</div>
-                <div class="stat-sub">today</div>
-            </div>
+                        <p style="margin:0 0 24px;color:#374151;font-size:15px;line-height:1.7;">
+                            Here's a recap of everything you accomplished today. Keep the momentum going! 🚀
+                        </p>
 
-        </div>
+                        <!-- Section heading: Today at a glance -->
+                        <p style="margin:0 0 12px;font-size:13px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Today at a glance</p>
 
-        <!-- ── Health & Exercise Status ── -->
-        <div class="section-title">Health &amp; Lifestyle</div>
-        <div class="status-row">
-            <span th:if="${healthLogged}"   class="badge badge-green">❤️ Health Logged</span>
-            <span th:unless="${healthLogged}" class="badge badge-red">❤️ Health Not Logged</span>
+                        <!-- Stats: 2-column table -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                            <tr>
+                                <!-- Tasks card -->
+                                <td width="49%" valign="top" style="background-color:#f9fafb;border-radius:10px;padding:18px 20px;">
+                                    <div style="font-size:22px;margin-bottom:6px;">✅</div>
+                                    <p style="margin:0 0 4px;font-size:12px;color:#9ca3af;">Tasks Completed</p>
+                                    <p th:text="${tasksCompleted}" style="margin:0;font-size:20px;font-weight:700;color:#111827;">0</p>
+                                    <p th:text="'of ' + ${tasksTotal} + ' total'" style="margin:2px 0 0;font-size:12px;color:#6b7280;">of 0 total</p>
+                                </td>
+                                <td width="2%"></td>
+                                <!-- Spending card -->
+                                <td width="49%" valign="top" style="background-color:#f9fafb;border-radius:10px;padding:18px 20px;">
+                                    <div style="font-size:22px;margin-bottom:6px;">💸</div>
+                                    <p style="margin:0 0 4px;font-size:12px;color:#9ca3af;">Total Spent</p>
+                                    <p th:text="'₹' + ${totalSpent}" style="margin:0;font-size:20px;font-weight:700;color:#111827;">₹0</p>
+                                    <p style="margin:2px 0 0;font-size:12px;color:#6b7280;">today</p>
+                                </td>
+                            </tr>
+                        </table>
 
-            <span th:if="${exerciseLogged}"   class="badge badge-blue">🏋️ Exercised</span>
-            <span th:unless="${exerciseLogged}" class="badge badge-gray">🏋️ No Exercise</span>
+                        <!-- Section heading: Health & Lifestyle -->
+                        <p style="margin:0 0 12px;font-size:13px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">Health &amp; Lifestyle</p>
 
-            <span th:if="${mood != null}" class="badge badge-green"
-                  th:text="'😊 Mood: ' + ${#strings.toLowerCase(mood)}"></span>
-        </div>
+                        <!-- Health badge row -->
+                        <table cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                            <tr>
+                                <!-- Health logged -->
+                                <td style="padding-right:8px;padding-bottom:8px;">
+                                    <span th:if="${healthLogged}"
+                                          style="display:inline-block;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;background-color:#d1fae5;color:#065f46;">
+                                        ❤️ Health Logged
+                                    </span>
+                                    <span th:unless="${healthLogged}"
+                                          style="display:inline-block;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;background-color:#fee2e2;color:#991b1b;">
+                                        ❤️ Health Not Logged
+                                    </span>
+                                </td>
+                                <!-- Exercise -->
+                                <td style="padding-right:8px;padding-bottom:8px;">
+                                    <span th:if="${exerciseLogged}"
+                                          style="display:inline-block;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;background-color:#dbeafe;color:#1e40af;">
+                                        🏋️ Exercised
+                                    </span>
+                                    <span th:unless="${exerciseLogged}"
+                                          style="display:inline-block;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;background-color:#f3f4f6;color:#6b7280;">
+                                        🏋️ No Exercise
+                                    </span>
+                                </td>
+                                <!-- Mood (only if present) -->
+                                <td th:if="${mood != null}" style="padding-bottom:8px;">
+                                    <span th:text="'😊 Mood: ' + ${#strings.toLowerCase(mood)}"
+                                          style="display:inline-block;padding:8px 14px;border-radius:999px;font-size:13px;font-weight:600;background-color:#d1fae5;color:#065f46;">
+                                        😊 Mood
+                                    </span>
+                                </td>
+                            </tr>
+                        </table>
 
-        <!-- ── Streaks ── -->
-        <div th:if="${streaks != null and !#lists.isEmpty(streaks)}">
-            <div class="section-title">🔥 Current Streaks</div>
-            <div class="streaks">
-                <div class="streak-item" th:each="streak : ${streaks}">
-                    <span class="streak-label" th:text="${streak.streakType}">HEALTH_LOG</span>
-                    <span>
-                        <span class="streak-count" th:text="${streak.currentCount}">0</span>
-                        <span class="streak-unit">days</span>
-                    </span>
-                </div>
-            </div>
-        </div>
+                        <!-- ── Streaks ── -->
+                        <div th:if="${streaks != null and !#lists.isEmpty(streaks)}">
+                            <p style="margin:0 0 12px;font-size:13px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:0.05em;">🔥 Current Streaks</p>
+                            <table width="100%" cellpadding="0" cellspacing="0" border="0"
+                                   style="margin-bottom:28px;background-color:#faf5ff;border:1px solid #e9d5ff;border-radius:10px;">
+                                <tr th:each="streak, iterStat : ${streaks}">
+                                    <td th:style="${iterStat.last}
+                                            ? 'padding:10px 24px;border-bottom:none;'
+                                            : 'padding:10px 24px;border-bottom:1px solid #f3e8ff;'">
+                                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                                            <tr>
+                                                <td style="font-size:14px;color:#374151;" th:text="${streak.streakType}">HEALTH_LOG</td>
+                                                <td align="right">
+                                                    <span th:text="${streak.currentCount}" style="font-size:16px;font-weight:700;color:#7c3aed;">0</span>
+                                                    <span style="font-size:12px;color:#9ca3af;margin-left:2px;">days</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
 
-        <!-- ── Motivational message ── -->
-        <div class="motivational">
-            <p th:if="${tasksCompleted > 0 and healthLogged and exerciseLogged}">
-                🌟 Perfect day! Tasks done, health logged, and workout complete. You're crushing it!
-            </p>
-            <p th:if="${tasksCompleted == 0 and !healthLogged and !exerciseLogged}">
-                Tomorrow is a fresh start. Small steps lead to big results. You've got this! 💪
-            </p>
-            <p th:unless="${(tasksCompleted > 0 and healthLogged and exerciseLogged) or (tasksCompleted == 0 and !healthLogged and !exerciseLogged)}">
-                Good effort today! Every day you show up is a win. Rest up and come back stronger 🌙
-            </p>
-        </div>
+                        <!-- ── Motivational message ── -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="margin-bottom:28px;">
+                            <tr>
+                                <td style="background:linear-gradient(135deg,#ecfdf5,#d1fae5);border-radius:10px;padding:20px 24px;text-align:center;">
+                                    <p th:if="${tasksCompleted > 0 and healthLogged and exerciseLogged}"
+                                       style="margin:0;font-size:15px;color:#065f46;font-weight:500;">
+                                        🌟 Perfect day! Tasks done, health logged, and workout complete. You're crushing it!
+                                    </p>
+                                    <p th:if="${tasksCompleted == 0 and !healthLogged and !exerciseLogged}"
+                                       style="margin:0;font-size:15px;color:#065f46;font-weight:500;">
+                                        Tomorrow is a fresh start. Small steps lead to big results. You've got this! 💪
+                                    </p>
+                                    <p th:unless="${(tasksCompleted > 0 and healthLogged and exerciseLogged) or (tasksCompleted == 0 and !healthLogged and !exerciseLogged)}"
+                                       style="margin:0;font-size:15px;color:#065f46;font-weight:500;">
+                                        Good effort today! Every day you show up is a win. Rest up and come back stronger 🌙
+                                    </p>
+                                </td>
+                            </tr>
+                        </table>
 
-        <!-- CTA -->
-        <div class="cta-wrap">
-            <a href="http://localhost:3000" class="cta-btn">Open Daily Tracker →</a>
-        </div>
-    </div>
+                        <!-- CTA Button -->
+                        <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                            <tr>
+                                <td align="center" style="padding:4px 0 28px;">
+                                    <a href="http://localhost:3000"
+                                       style="display:inline-block;padding:14px 32px;border-radius:8px;background-color:#6366f1;font-size:15px;font-weight:600;text-decoration:none;color:#ffffff;">
+                                        Open Daily Tracker →
+                                    </a>
+                                </td>
+                            </tr>
+                        </table>
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>Daily Life Tracker · This summary is sent every evening at 9 PM.<br/>
-           <a href="http://localhost:3000" style="color:#6366f1; text-decoration:none;">Open App</a>
-        </p>
-    </div>
+                    </td>
+                </tr>
 
-</div>
+                <!-- ── Footer ── -->
+                <tr>
+                    <td style="background-color:#f9fafb;border-top:1px solid #e5e7eb;padding:24px 40px;text-align:center;">
+                        <p style="margin:0;font-size:12px;color:#9ca3af;line-height:1.6;">
+                            Daily Life Tracker &middot; This summary is sent every evening at 9 PM.<br/>
+                            <a href="http://localhost:3000" style="color:#6366f1;text-decoration:none;">Open App</a>
+                        </p>
+                    </td>
+                </tr>
+
+            </table>
+            <!-- /Card -->
+
+        </td>
+    </tr>
+</table>
+
 </body>
 </html>

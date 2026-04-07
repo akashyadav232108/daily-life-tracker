@@ -102,7 +102,7 @@ public class EmailService {
             Context ctx = new Context();
             ctx.setVariable("fullName", fullName != null ? fullName : "there");
 
-            String html    = emailTemplateEngine.process("email/welcome", ctx);
+            String html    = emailTemplateEngine.process("welcome", ctx);
             String subject = "👋 Welcome to Daily Life Tracker!";
 
             send(toEmail, subject, html);

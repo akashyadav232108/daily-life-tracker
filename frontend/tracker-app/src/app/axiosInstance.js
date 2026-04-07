@@ -51,10 +51,15 @@ const createAxiosInstance = (baseURL) => {
       const originalRequest = error.config;
 
       // Skip token refresh for auth endpoints (login/refresh/register return 401 legitimately)
+      // Also skip for password-reset flow — these are unauthenticated endpoints that can
+      // legitimately return 401 (wrong OTP / bad reset token) and must NOT trigger a redirect.
       const isAuthEndpoint =
         originalRequest.url?.includes('/api/auth/login') ||
         originalRequest.url?.includes('/api/auth/refresh') ||
-        originalRequest.url?.includes('/api/auth/register');
+        originalRequest.url?.includes('/api/auth/register') ||
+        originalRequest.url?.includes('/api/auth/forgot-password') ||
+        originalRequest.url?.includes('/api/auth/verify-otp') ||
+        originalRequest.url?.includes('/api/auth/reset-password');
 
       // If 401 and we haven't retried yet and NOT an auth endpoint
       if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {

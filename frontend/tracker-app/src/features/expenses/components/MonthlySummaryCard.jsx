@@ -147,7 +147,7 @@ const SummaryStatCard = ({ label, value, color, bg, icon }) => (
   <div className={`rounded-lg ${bg} p-3 text-center`}>
     <p className="text-lg">{icon}</p>
     <p className={`mt-0.5 text-xs font-medium text-gray-500`}>{label}</p>
-    <p className={`mt-0.5 text-sm font-bold ${color} leading-tight`}>{value}</p>
+    <p className={`mt-0.5 break-all text-xs font-bold leading-tight ${color}`}>{value}</p>
   </div>
 );
 

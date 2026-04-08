@@ -74,6 +74,13 @@
 			<version>0.12.6</version>
 			<scope>runtime</scope>
 		</dependency>
+		<!-- Rate Limiting — Bucket4j with Redis backend -->
+		<dependency>
+			<groupId>com.bucket4j</groupId>
+			<artifactId>bucket4j-redis</artifactId>
+			<version>8.10.1</version>
+		</dependency>
+
 		<!-- Email (SMTP via Gmail) -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

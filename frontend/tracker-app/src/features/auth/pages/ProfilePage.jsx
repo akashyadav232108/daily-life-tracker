@@ -1,6 +1,7 @@
 import { HiUserCircle, HiLockClosed } from 'react-icons/hi2';
 import ProfileForm from '../components/ProfileForm';
 import ChangePasswordForm from '../components/ChangePasswordForm';
+import DeleteAccountSection from '../components/DeleteAccountSection';
 import useAuth from '../../../hooks/useAuth';
 
 const ProfilePage = () => {
@@ -42,7 +43,7 @@ const ProfilePage = () => {
       </section>
 
       {/* Change Password section */}
-      <section className="overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
+      <section className="mb-8 overflow-hidden rounded-xl bg-white shadow-sm ring-1 ring-gray-200">
         <div className="flex items-center gap-3 border-b border-gray-200 px-6 py-4">
           <HiLockClosed className="h-5 w-5 text-primary" />
           <h2 className="text-lg font-semibold text-gray-900">Change Password</h2>
@@ -51,6 +52,9 @@ const ProfilePage = () => {
           <ChangePasswordForm />
         </div>
       </section>
+
+      {/* Danger Zone — Delete Account */}
+      <DeleteAccountSection />
     </div>
   );
 };

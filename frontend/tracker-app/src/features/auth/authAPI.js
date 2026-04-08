@@ -45,6 +45,12 @@ const authAPI = {
   changePassword: (data) => authAxios.put('/api/users/me/password', data),
 
   /**
+   * DELETE /api/users/me — Permanently delete own account (password required)
+   * @param {{ password: string }} data
+   */
+  deleteAccount: (data) => authAxios.delete('/api/users/me', { data }),
+
+  /**
    * POST /api/auth/forgot-password — Step 1: Send OTP to registered email.
    * Also used for "Resend OTP" on the verify-otp page.
    * @param {{ email: string }} data

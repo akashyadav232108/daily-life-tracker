@@ -6,9 +6,9 @@ import {
   HiBolt,
   HiCurrencyDollar,
   HiBell,
-  HiShieldCheck,
   HiUsers,
   HiSquares2X2,
+  HiLockClosed,
   HiXMark,
 } from 'react-icons/hi2';
 import { useSelector } from 'react-redux';
@@ -25,13 +25,13 @@ const navItems = [
 ];
 
 const adminItems = [
-  { to: '/admin',       icon: HiSquares2X2,           label: 'Dashboard'        },
-  { to: '/admin/users', icon: HiUsers,                label: 'User Management'  },
-  { to: '/admin/tasks', icon: HiClipboardDocumentList, label: 'Task Lookup'     },
+  { to: '/admin',       icon: HiSquares2X2,            label: 'Dashboard'       },
+  { to: '/admin/users', icon: HiUsers,                 label: 'User Management' },
+  { to: '/admin/tasks', icon: HiClipboardDocumentList, label: 'Task Lookup', partialSuperAdmin: true },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const { isAdmin } = useAuth();
+  const { isAdmin, isSuperAdmin } = useAuth();
   const unreadCount = useSelector(selectUnreadCount);
 
   const linkClass = ({ isActive }) =>
@@ -101,9 +101,21 @@ const Sidebar = ({ isOpen, onClose }) => {
           {/* Admin section */}
           {isAdmin && (
             <>
-              <p className="mt-6 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
-                Admin
-              </p>
+              {/* Section header with role badge */}
+              <div className="mt-6 mb-2 flex items-center gap-2 px-3">
+                <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
+                  Admin
+                </p>
+                <span
+                  className={`rounded-full px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide ${
+                    isSuperAdmin
+                      ? 'bg-purple-500 text-white'
+                      : 'bg-blue-500 text-white'
+                  }`}
+                >
+                  {isSuperAdmin ? 'Super' : 'Admin'}
+                </span>
+              </div>
               {adminItems.map((item) => (
                 <NavLink
                   key={item.to}
@@ -123,6 +135,13 @@ const Sidebar = ({ isOpen, onClose }) => {
                     <span className="ml-auto rounded-full bg-gray-700 px-2 py-0.5 text-[10px] text-gray-400">
                       Soon
                     </span>
+                  )}
+                  {/* Lock hint — shown on items with partial SUPER_ADMIN content, for regular ADMINs only */}
+                  {item.partialSuperAdmin && !isSuperAdmin && (
+                    <HiLockClosed
+                      className="ml-auto h-3.5 w-3.5 shrink-0 text-gray-600"
+                      title="Some features require Super Admin"
+                    />
                   )}
                 </NavLink>
               ))}

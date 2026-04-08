@@ -86,8 +86,14 @@ const Navbar = ({ onToggleSidebar }) => {
                 <div className="border-b border-gray-100 px-4 py-2">
                   <p className="text-sm font-medium text-gray-900">{user?.fullName}</p>
                   <p className="text-xs text-gray-500">{user?.email}</p>
-                  <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
-                    {user?.role}
+                  <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
+                    user?.role === 'SUPER_ADMIN'
+                      ? 'bg-purple-100 text-purple-700'
+                      : user?.role === 'ADMIN'
+                      ? 'bg-blue-100 text-blue-700'
+                      : 'bg-gray-100 text-gray-600'
+                  }`}>
+                    {user?.role?.replace('_', ' ')}
                   </span>
                 </div>
                 <button

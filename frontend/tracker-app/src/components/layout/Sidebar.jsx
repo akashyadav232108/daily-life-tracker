@@ -25,7 +25,7 @@ const navItems = [
 
 const adminItems = [
   { to: '/admin', icon: HiShieldCheck, label: 'Admin Tasks' },
-  { to: '/admin/users', icon: HiUsers, label: 'User Management', comingSoon: true },
+  { to: '/admin/users', icon: HiUsers, label: 'User Management' },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {

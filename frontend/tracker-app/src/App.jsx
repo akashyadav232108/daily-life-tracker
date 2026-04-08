@@ -15,6 +15,7 @@ import DashboardPage from './features/dashboard/pages/DashboardPage';
 import TasksPage from './features/tasks/pages/TasksPage';
 import ProfilePage from './features/auth/pages/ProfilePage';
 import AdminTasksPage from './features/admin/pages/AdminTasksPage';
+import AdminUsersPage from './features/admin/pages/AdminUsersPage';
 import HealthPage from './features/health/pages/HealthPage';
 import ExercisePage from './features/exercises/pages/ExercisePage';
 import ExpensePage from './features/expenses/pages/ExpensePage';
@@ -143,10 +144,7 @@ const App = () => {
           <ProtectedRoute>
             <AdminRoute>
               <PageLayout>
-                <PlaceholderPage
-                  title="User Management"
-                  message="User management will be available once admin features are completed."
-                />
+                <AdminUsersPage />
               </PageLayout>
             </AdminRoute>
           </ProtectedRoute>
@@ -171,17 +169,5 @@ const App = () => {
     </Routes>
   );
 };
-
-/**
- * Simple placeholder for routes that are not yet implemented.
- */
-const PlaceholderPage = ({ title, message }) => (
-  <div className="py-12 text-center">
-    <h1 className="text-2xl font-bold text-gray-900">{title}</h1>
-    <div className="mx-auto mt-6 max-w-md rounded-xl border border-dashed border-gray-300 bg-white p-8">
-      <p className="text-gray-400">{message}</p>
-    </div>
-  </div>
-);
 
 export default App;

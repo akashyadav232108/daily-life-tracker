@@ -14,6 +14,7 @@ import ResetPasswordPage from './features/auth/pages/ResetPasswordPage';
 import DashboardPage from './features/dashboard/pages/DashboardPage';
 import TasksPage from './features/tasks/pages/TasksPage';
 import ProfilePage from './features/auth/pages/ProfilePage';
+import AdminDashboardPage from './features/admin/pages/AdminDashboardPage';
 import AdminTasksPage from './features/admin/pages/AdminTasksPage';
 import AdminUsersPage from './features/admin/pages/AdminUsersPage';
 import HealthPage from './features/health/pages/HealthPage';
@@ -114,18 +115,20 @@ const App = () => {
       />
 
       {/* ── Admin Routes ── */}
+      {/* /admin — Dashboard overview (landing page for admins) */}
       <Route
         path="/admin"
         element={
           <ProtectedRoute>
             <AdminRoute>
               <PageLayout>
-                <AdminTasksPage />
+                <AdminDashboardPage />
               </PageLayout>
             </AdminRoute>
           </ProtectedRoute>
         }
       />
+      {/* /admin/tasks — Platform task stats + user task lookup */}
       <Route
         path="/admin/tasks"
         element={

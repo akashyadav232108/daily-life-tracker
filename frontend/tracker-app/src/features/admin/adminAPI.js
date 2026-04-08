@@ -1,4 +1,4 @@
-import { authAxios, taskAxios, healthAxios } from '../../app/axiosInstance';
+import { authAxios, taskAxios, healthAxios, expenseAxios } from '../../app/axiosInstance';
 
 /**
  * Admin API calls — combines auth-service admin & task-service admin endpoints.
@@ -98,5 +98,15 @@ export const adminFetchHealthStats = async () => {
 
 export const adminFetchExerciseStats = async () => {
   const response = await healthAxios.get('/api/exercises/admin/stats');
+  return response.data;
+};
+
+// ─── Expense-Service Admin (/api/expenses/admin) ───────────────────────────────
+
+/**
+ * GET /api/expenses/admin/stats — Platform-wide expense statistics
+ */
+export const adminFetchExpenseStats = async () => {
+  const response = await expenseAxios.get('/api/expenses/admin/stats');
   return response.data;
 };

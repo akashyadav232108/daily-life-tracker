@@ -8,6 +8,7 @@ import {
   HiBell,
   HiShieldCheck,
   HiUsers,
+  HiSquares2X2,
   HiXMark,
 } from 'react-icons/hi2';
 import { useSelector } from 'react-redux';
@@ -24,8 +25,9 @@ const navItems = [
 ];
 
 const adminItems = [
-  { to: '/admin', icon: HiShieldCheck, label: 'Admin Tasks' },
-  { to: '/admin/users', icon: HiUsers, label: 'User Management' },
+  { to: '/admin',       icon: HiSquares2X2,           label: 'Dashboard'        },
+  { to: '/admin/users', icon: HiUsers,                label: 'User Management'  },
+  { to: '/admin/tasks', icon: HiClipboardDocumentList, label: 'Task Lookup'     },
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {

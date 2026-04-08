@@ -37,7 +37,7 @@ public class RateLimitProperties {
     /** POST /api/expenses/import — CSV bulk import */
     private LimitConfig writeHeavy = new LimitConfig(5, 0, 1);
 
-    /** GET /api/*/summary/* — aggregation queries */
+    // GET /api/{service}/summary/{period} — aggregation queries
     private LimitConfig summaryQueries = new LimitConfig(20, 1, 0);
 
     // ──────────────────────────────────────────────────────────────

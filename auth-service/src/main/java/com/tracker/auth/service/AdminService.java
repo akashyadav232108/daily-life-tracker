@@ -85,9 +85,9 @@ public class AdminService {
         return mapToUserResponse(updatedUser);
     }
 
-    // ── PATCH /api/users/admin/{userId}/role — Change user role (SUPER_ADMIN only) ──
+    // ── PATCH /api/users/admin/{userId}/role — Change user role (ADMIN can promote to ADMIN; SUPER_ADMIN has full control) ──
     @Transactional
-    public UserResponse changeRole(Long targetUserId, Long adminUserId, ChangeRoleRequest request) {
+    public UserResponse changeRole(Long targetUserId, Long adminUserId, String adminRole, ChangeRoleRequest request) {
         User targetUser = findUserById(targetUserId);
 
         // Parse and validate the new role
@@ -98,9 +98,20 @@ public class AdminService {
             throw new AccessDeniedException("Invalid role: " + request.getRole() + ". Valid roles: USER, ADMIN, SUPER_ADMIN");
         }
 
-        // SUPER_ADMIN cannot demote themselves (prevent lockout)
+        // Cannot change your own role
         if (targetUserId.equals(adminUserId)) {
             throw new AccessDeniedException("You cannot change your own role");
+        }
+
+        // ADMIN can only assign USER or ADMIN roles — cannot touch SUPER_ADMIN
+        if (Role.valueOf(adminRole) == Role.ADMIN) {
+            if (newRole == Role.SUPER_ADMIN) {
+                throw new AccessDeniedException("ADMIN cannot promote users to SUPER_ADMIN");
+            }
+            // ADMIN also cannot modify other ADMIN or SUPER_ADMIN accounts
+            if (targetUser.getRole() == Role.ADMIN || targetUser.getRole() == Role.SUPER_ADMIN) {
+                throw new AccessDeniedException("ADMIN cannot change the role of another ADMIN or SUPER_ADMIN");
+            }
         }
 
         // No-op check
@@ -112,7 +123,7 @@ public class AdminService {
         targetUser.setRole(newRole);
         User updatedUser = userRepository.save(targetUser);
 
-        log.info("User {} role changed from {} to {} by SUPER_ADMIN {}", targetUserId, oldRole, newRole, adminUserId);
+        log.info("User {} role changed from {} to {} by {} {}", targetUserId, oldRole, newRole, adminRole, adminUserId);
         return mapToUserResponse(updatedUser);
     }
 

@@ -81,17 +81,18 @@ public class AdminUserController {
         return ResponseEntity.ok(ApiResponse.success("User activated successfully", user));
     }
 
-    // ── PATCH /api/users/admin/{userId}/role — Change user role (SUPER_ADMIN only) ──
+    // ── PATCH /api/users/admin/{userId}/role — Change user role (ADMIN can promote to ADMIN; SUPER_ADMIN has full control) ──
     @PatchMapping("/{userId}/role")
-    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<UserResponse>> changeUserRole(
             @PathVariable Long userId,
             @Valid @RequestBody ChangeRoleRequest request,
             Authentication authentication) {
 
         Long adminUserId = (Long) authentication.getPrincipal();
+        String adminRole = extractRole(authentication);
 
-        UserResponse user = adminService.changeRole(userId, adminUserId, request);
+        UserResponse user = adminService.changeRole(userId, adminUserId, adminRole, request);
         return ResponseEntity.ok(ApiResponse.success("User role updated to " + request.getRole().toUpperCase(), user));
     }
 

@@ -31,9 +31,10 @@ public class AdminExpenseController {
 
     /**
      * GET /api/expenses/admin/users/{userId}
-     * View any user's expenses (read-only).
+     * View any user's expenses — SUPER_ADMIN only (personal financial data).
      */
     @GetMapping("/users/{userId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<List<ExpenseResponse>>> getUserExpenses(
             @PathVariable Long userId) {
         List<ExpenseResponse> expenses = expenseService.getExpensesForUser(userId);
@@ -42,9 +43,10 @@ public class AdminExpenseController {
 
     /**
      * GET /api/expenses/admin/users/{userId}/budgets
-     * View any user's budgets (read-only).
+     * View any user's budgets — SUPER_ADMIN only (personal financial data).
      */
     @GetMapping("/users/{userId}/budgets")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<List<BudgetResponse>>> getUserBudgets(
             @PathVariable Long userId) {
         List<BudgetResponse> budgets = budgetService.getBudgetsForUser(userId);

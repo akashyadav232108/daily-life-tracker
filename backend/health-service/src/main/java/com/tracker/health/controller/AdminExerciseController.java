@@ -34,7 +34,9 @@ public class AdminExerciseController {
     private final ExercisePlanExerciseRepository exercisePlanExerciseRepository;
     private final ExerciseLogRepository exerciseLogRepository;
 
+    // SUPER_ADMIN only — personal exercise plan data
     @GetMapping("/users/{userId}/plans")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<List<ExercisePlanResponse>>> getUserPlans(@PathVariable Long userId) {
         List<ExercisePlanResponse> list = exercisePlanRepository.findAllByUserId(userId).stream()
                 .map(this::toResponse)
@@ -42,7 +44,9 @@ public class AdminExerciseController {
         return ResponseEntity.ok(ApiResponse.success("User exercise plans", list));
     }
 
+    // SUPER_ADMIN only — personal exercise log data
     @GetMapping("/users/{userId}/logs")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<List<ExerciseLogResponse>>> getUserLogs(@PathVariable Long userId) {
         List<ExerciseLogResponse> list = exerciseLogRepository.findAll().stream()
                 .filter(l -> l.getUserId().equals(userId))

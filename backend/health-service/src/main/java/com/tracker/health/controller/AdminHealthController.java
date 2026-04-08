@@ -25,7 +25,9 @@ public class AdminHealthController {
 
     private final HealthLogRepository healthLogRepository;
 
+    // SUPER_ADMIN only — personal health data (weight, sleep, mood, steps)
     @GetMapping("/users/{userId}/logs")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<List<HealthLogResponse>>> getUserLogs(@PathVariable Long userId) {
         List<HealthLogResponse> list = healthLogRepository
                 .findAllByUserIdAndLogDateBetween(userId, LocalDate.now().minusDays(30), LocalDate.now())

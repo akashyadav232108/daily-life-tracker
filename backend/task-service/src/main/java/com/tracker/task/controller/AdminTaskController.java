@@ -18,9 +18,9 @@ public class AdminTaskController {
 
     private final TaskService taskService;
 
-    // ── GET /api/tasks/admin/users/{userId} — View any user's tasks (ADMIN+) ──
+    // ── GET /api/tasks/admin/users/{userId} — View any user's tasks (SUPER_ADMIN only — personal data) ──
     @GetMapping("/users/{userId}")
-    @PreAuthorize("hasAnyRole('ADMIN', 'SUPER_ADMIN')")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
     public ResponseEntity<ApiResponse<List<TaskResponse>>> getUserTasks(@PathVariable Long userId) {
         List<TaskResponse> tasks = taskService.getTasksByUserId(userId);
         return ResponseEntity.ok(ApiResponse.success("Tasks retrieved successfully", tasks));

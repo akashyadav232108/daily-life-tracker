@@ -1,6 +1,7 @@
 package com.tracker.auth.controller;
 
 import com.tracker.auth.model.dto.request.ChangePasswordRequest;
+import com.tracker.auth.model.dto.request.DeleteAccountRequest;
 import com.tracker.auth.model.dto.request.UpdateProfileRequest;
 import com.tracker.auth.model.dto.response.ApiResponse;
 import com.tracker.auth.model.dto.response.UserResponse;
@@ -44,5 +45,15 @@ public class UserController {
         Long userId = (Long) authentication.getPrincipal();
         userService.changePassword(userId, request);
         return ResponseEntity.ok(ApiResponse.success("Password changed successfully"));
+    }
+
+    // ── DELETE /api/users/me — Permanently delete own account (password required) ──
+    @DeleteMapping("/me")
+    public ResponseEntity<ApiResponse<Void>> deleteMyAccount(
+            Authentication authentication,
+            @Valid @RequestBody DeleteAccountRequest request) {
+        Long userId = (Long) authentication.getPrincipal();
+        userService.deleteMyAccount(userId, request);
+        return ResponseEntity.ok(ApiResponse.success("Account permanently deleted"));
     }
 }

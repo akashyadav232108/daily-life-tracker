@@ -3,17 +3,22 @@ package com.tracker.auth.service;
 import com.tracker.auth.exception.InvalidCredentialsException;
 import com.tracker.auth.exception.ResourceNotFoundException;
 import com.tracker.auth.model.dto.request.ChangePasswordRequest;
+import com.tracker.auth.model.dto.request.DeleteAccountRequest;
 import com.tracker.auth.model.dto.request.UpdateProfileRequest;
 import com.tracker.auth.model.dto.response.UserResponse;
 import com.tracker.auth.model.entity.User;
+import com.tracker.auth.model.enums.Role;
 import com.tracker.auth.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
 
     private final UserRepository userRepository;
@@ -59,6 +64,25 @@ public class UserService {
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
+    }
+
+    // ── Delete Own Account ──
+    @Transactional
+    public void deleteMyAccount(Long userId, DeleteAccountRequest request) {
+        User user = findUserById(userId);
+
+        // SUPER_ADMIN cannot self-delete (prevents system lockout)
+        if (user.getRole() == Role.SUPER_ADMIN) {
+            throw new AccessDeniedException("SUPER_ADMIN accounts cannot be self-deleted. Contact your system owner.");
+        }
+
+        // Verify the provided password against stored hash
+        if (!passwordEncoder.matches(request.getPassword(), user.getPasswordHash())) {
+            throw new InvalidCredentialsException("Incorrect password. Account deletion cancelled.");
+        }
+
+        userRepository.delete(user);
+        log.info("User {} (email: {}, role: {}) permanently deleted their own account", userId, user.getEmail(), user.getRole());
     }
 
     // ── Helper: Find user or throw 404 ──

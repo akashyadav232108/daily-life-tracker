@@ -53,20 +53,20 @@ const Sidebar = ({ isOpen, onClose }) => {
 
       {/* Sidebar */}
       <aside
-        className={`fixed top-16 left-0 z-40 h-[calc(100vh-4rem)] w-64 transform bg-sidebar transition-transform duration-200 ease-in-out lg:translate-x-0 ${
+        className={`fixed top-16 left-0 z-40 flex h-[calc(100vh-4rem)] w-64 flex-col transform bg-sidebar transition-transform duration-200 ease-in-out lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        {/* Mobile close button */}
-        <div className="flex items-center justify-end p-2 lg:hidden">
+        {/* Mobile close button — shrinks to its natural height */}
+        <div className="flex shrink-0 items-center justify-end p-2 lg:hidden">
           <button onClick={onClose} className="rounded-lg p-1 text-gray-400 hover:text-white">
             <HiXMark className="h-5 w-5" />
           </button>
         </div>
 
-        {/* Navigation links */}
-        <nav className="flex flex-col gap-1 px-3 py-4">
-          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
+        {/* Navigation links — grows to fill space, scrolls when content overflows */}
+        <nav className="flex flex-1 flex-col gap-1 overflow-y-auto px-3 py-4 scrollbar-thin">
+          <p className="mb-2 shrink-0 px-3 text-xs font-semibold uppercase tracking-wider text-gray-500">
             Menu
           </p>
           {navItems.map((item) => (
@@ -84,14 +84,14 @@ const Sidebar = ({ isOpen, onClose }) => {
               }}
             >
               <item.icon className="h-5 w-5 shrink-0" />
-              <span>{item.label}</span>
+              <span className="truncate">{item.label}</span>
               {item.comingSoon && (
-                <span className="ml-auto rounded-full bg-gray-700 px-2 py-0.5 text-[10px] text-gray-400">
+                <span className="ml-auto shrink-0 rounded-full bg-gray-700 px-2 py-0.5 text-[10px] text-gray-400">
                   Soon
                 </span>
               )}
               {item.badge && unreadCount > 0 && (
-                <span className="ml-auto flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+                <span className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
               )}
@@ -102,7 +102,7 @@ const Sidebar = ({ isOpen, onClose }) => {
           {isAdmin && (
             <>
               {/* Section header with role badge */}
-              <div className="mt-6 mb-2 flex items-center gap-2 px-3">
+              <div className="mt-6 mb-2 flex shrink-0 items-center gap-2 px-3">
                 <p className="text-xs font-semibold uppercase tracking-wider text-gray-500">
                   Admin
                 </p>
@@ -130,9 +130,9 @@ const Sidebar = ({ isOpen, onClose }) => {
                   }}
                 >
                   <item.icon className="h-5 w-5 shrink-0" />
-                  <span>{item.label}</span>
+                  <span className="truncate">{item.label}</span>
                   {item.comingSoon && (
-                    <span className="ml-auto rounded-full bg-gray-700 px-2 py-0.5 text-[10px] text-gray-400">
+                    <span className="ml-auto shrink-0 rounded-full bg-gray-700 px-2 py-0.5 text-[10px] text-gray-400">
                       Soon
                     </span>
                   )}
@@ -147,10 +147,13 @@ const Sidebar = ({ isOpen, onClose }) => {
               ))}
             </>
           )}
+
+          {/* Bottom padding so the last item doesn't sit flush against the footer */}
+          <div className="h-2 shrink-0" />
         </nav>
 
-        {/* Footer */}
-        <div className="absolute bottom-0 w-full border-t border-gray-700 px-4 py-3">
+        {/* Footer — always pinned at bottom, never overlaps nav */}
+        <div className="shrink-0 border-t border-gray-700 px-4 py-3">
           <p className="text-xs text-gray-500">Daily Life Tracker v1.0</p>
         </div>
       </aside>

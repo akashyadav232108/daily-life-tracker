@@ -15,6 +15,7 @@ import com.tracker.auth.security.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -34,29 +35,34 @@ public class AuthService {
 
     // ── Register ──
     public AuthResponse register(RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new UserAlreadyExistsException("User with email " + request.getEmail() + " already exists");
-        }
 
-        User user = User.builder()
-                .email(request.getEmail().trim().toLowerCase())
-                .passwordHash(passwordEncoder.encode(request.getPassword()))
-                .fullName(request.getFullName().trim())
-                .role(Role.USER)
-                .isActive(true)
-                .build();
+       try {
+           User user = User.builder()
+                   .email(request.getEmail().trim().toLowerCase())
+                   .passwordHash(passwordEncoder.encode(request.getPassword()))
+                   .fullName(request.getFullName().trim())
+                   .role(Role.USER)
+                   .isActive(true)
+                   .build();
 
-        User savedUser = userRepository.save(user);
+           User savedUser = userRepository.save(user);
 
-        // Publish event so notification-service can send a welcome email
-        try {
-            userEventProducer.publishUserRegistered(
-                    savedUser.getId(), savedUser.getEmail(), savedUser.getFullName());
-        } catch (Exception e) {
-            log.warn("Failed to publish USER_REGISTERED event for userId={}: {}", savedUser.getId(), e.getMessage());
-        }
+           // Publish event so notification-service can send a welcome email
+           try {
+               userEventProducer.publishUserRegistered(
+                       savedUser.getId(), savedUser.getEmail(), savedUser.getFullName());
+           } catch (Exception e) {
+               log.warn("Failed to publish USER_REGISTERED event for userId={}: {}", savedUser.getId(), e.getMessage());
+           }
 
-        return generateAndStoreTokens(savedUser);
+           return generateAndStoreTokens(savedUser);
+
+       } catch (DataIntegrityViolationException e) {
+           throw new UserAlreadyExistsException(
+                   "User with email " + request.getEmail() + " already exists"
+           );
+       }
+
     }
 
     // ── Login ──

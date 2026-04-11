@@ -34,6 +34,14 @@ spring:
   cache:
     type: caffeine
 
+  # ── Redis (for rate limiting) ──
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+
   # ── Jackson: enable Java 8 date/time serialization ──
   jackson:
     serialization:
@@ -45,6 +53,17 @@ spring:
 # ── JWT Configuration (shared secret — same as auth-service) ──
 jwt:
   secret: ${JWT_SECRET:YTJkZmFzZGZhc2RmYXNkZjEyMzQ1Njc4OTAxMjM0NTY3ODkwYXNkZmFzZGY=}
+
+# ── Rate Limiting (Bucket4j + Redis) ──
+rate-limit:
+  global:
+    tokens: 200
+    refill-minutes: 1
+    refill-hours: 0
+  summary-queries:         # GET /health/summary/weekly
+    tokens: 20
+    refill-minutes: 1
+    refill-hours: 0
 
 # ── Logging ──
 logging:

@@ -59,6 +59,21 @@ kafka:
   topic:
     expense-events: expense-events
 
+# ── Rate Limiting (Bucket4j + Redis) ──
+rate-limit:
+  global:
+    tokens: 200
+    refill-minutes: 1
+    refill-hours: 0
+  write-heavy:             # POST /expenses/import (CSV bulk import)
+    tokens: 5
+    refill-minutes: 0
+    refill-hours: 1
+  summary-queries:         # GET /expenses/summary/monthly
+    tokens: 20
+    refill-minutes: 1
+    refill-hours: 0
+
 # ── Logging ──
 logging:
   level:

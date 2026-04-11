@@ -21,7 +21,7 @@ spring:
         dialect: org.hibernate.dialect.MySQLDialect
         format_sql: true
 
-# ── Kafka Producer ──
+  # ── Kafka Producer ──
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
@@ -30,12 +30,28 @@ spring:
       properties:
         spring.json.add.type.headers: false
 
-# ── Caching (Caffeine — configured programmatically in CacheConfig.java) ──
-spring.cache.type: caffeine
+  # ── Caching (Caffeine — configured programmatically in CacheConfig.java) ──
+  cache:
+    type: caffeine
+
+  # ── Redis (for rate limiting) ──
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
 
 # ── JWT Configuration (shared secret — same as auth-service) ──
 jwt:
   secret: ${JWT_SECRET:YTJkZmFzZGZhc2RmYXNkZjEyMzQ1Njc4OTAxMjM0NTY3ODkwYXNkZmFzZGY=}
+
+# ── Rate Limiting (Bucket4j + Redis) ──
+rate-limit:
+  global:
+    tokens: 200
+    refill-minutes: 1
+    refill-hours: 0
 
 # ── Logging ──
 logging:

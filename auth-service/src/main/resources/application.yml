@@ -30,11 +30,30 @@ spring:
       properties:
         spring.json.add.type.headers: false
 
-  # ── Redis (for JWT blacklisting & refresh tokens) ──
+  # ── Redis (for JWT blacklisting & refresh tokens & OTP) ──
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 2000ms
+
+  # ── Email (Gmail SMTP) ──
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: dailtytracker@gmail.com
+    password: mmvxjtixjiufepxw
+    properties:
+      mail.smtp.auth: true
+      mail.smtp.starttls.enable: true
+      mail.smtp.connectiontimeout: 5000
+      mail.smtp.timeout: 3000
+      mail.smtp.writetimeout: 5000
+
+  # ── Thymeleaf (disable web auto-config — email-only templates) ──
+  thymeleaf:
+    check-template-location: false
 
 # ── JWT Configuration ──
 jwt:
@@ -42,8 +61,43 @@ jwt:
   access-token-expiration: 900000       # 15 minutes (in milliseconds)
   refresh-token-expiration: 604800000   # 7 days (in milliseconds)
 
+# ── Email sender config ──
+app:
+  email:
+    from: dailtytracker@gmail.com
+    from-name: DailyTracker
+
+# ── OTP config ──
+otp:
+  expiry-minutes: 10               # How long the 6-digit OTP is valid
+  reset-token-expiry-minutes: 5    # How long the post-OTP reset token is valid
+
+# ── Rate Limiting (Bucket4j + Redis) ──
+rate-limit:
+  global:
+    tokens: 200
+    refill-minutes: 1
+    refill-hours: 0
+  auth-sensitive:          # POST /login, /register
+    tokens: 5
+    refill-minutes: 1
+    refill-hours: 0
+  otp-flow:                # /forgot-password, /verify-otp, /reset-password
+    tokens: 3
+    refill-minutes: 10
+    refill-hours: 0
+  password-ops:            # PUT /me/password
+    tokens: 5
+    refill-minutes: 10
+    refill-hours: 0
+  account-delete:          # DELETE /me
+    tokens: 3
+    refill-minutes: 0
+    refill-hours: 1
+
 # ── Logging ──
 logging:
   level:
     com.tracker.auth: DEBUG
     org.springframework.security: DEBUG
+    org.springframework.mail: DEBUG

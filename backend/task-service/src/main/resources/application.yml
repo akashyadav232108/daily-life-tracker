@@ -9,7 +9,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/tracker_task_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
     username: root
-    password: ${DB_PASSWORD:root}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
@@ -44,7 +44,7 @@ spring:
 
 # ── JWT Configuration (shared secret — same as auth-service) ──
 jwt:
-  secret: ${JWT_SECRET:YTJkZmFzZGZhc2RmYXNkZjEyMzQ1Njc4OTAxMjM0NTY3ODkwYXNkZmFzZGY=}
+  secret: ${JWT_SECRET}
 
 # ── Rate Limiting (Bucket4j + Redis) ──
 rate-limit:

@@ -1,39 +1,36 @@
 server:
-  port: 8085
+  port: ${PORT:8085}
 
 spring:
   application:
     name: notification-service
 
-  # ── MySQL ──
   datasource:
-    url: jdbc:mysql://localhost:3306/tracker_notification_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: ${DB_PASSWORD:root}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
+        format_sql: false
 
-  # ── Redis (unread count cache + streak cache + today's workout cache) ──
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
 
-  # ── Kafka (consumer only — listens to task-events, health-events, expense-events) ──
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     consumer:
-      group-id: notification-service-group
+      group-id: ${KAFKA_CONSUMER_GROUP:notification-service-group}
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
@@ -41,12 +38,11 @@ spring:
         spring.json.trusted.packages: "*"
         spring.json.use.type.headers: false
 
-  # ── Email (Gmail SMTP) ──
   mail:
     host: smtp.gmail.com
     port: 587
-    username: ${GMAIL_USERNAME:your-email@gmail.com}
-    password: ${GMAIL_APP_PASSWORD:your-app-password}
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
@@ -54,11 +50,9 @@ spring:
       mail.smtp.timeout: 3000
       mail.smtp.writetimeout: 5000
 
-  # ── Thymeleaf (for email templates only — disable web templates) ──
   thymeleaf:
     check-template-location: false
 
-  # ── Jackson: Java 8 date/time serialization ──
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -66,27 +60,23 @@ spring:
       fail-on-unknown-properties: false
     time-zone: UTC
 
-# ── JWT Configuration (shared secret — same as auth-service) ──
 jwt:
-  secret: ${JWT_SECRET:YTJkZmFzZGZhc2RmYXNkZjEyMzQ1Njc4OTAxMjM0NTY3ODkwYXNkZmFzZGY=}
+  secret: ${JWT_SECRET}
 
-# ── Kafka topics being consumed ──
 kafka:
   topic:
-    task-events: task-events
-    health-events: health-events
-    expense-events: expense-events
+    task-events: ${TASK_EVENTS_TOPIC:task-events}
+    health-events: ${HEALTH_EVENTS_TOPIC:health-events}
+    expense-events: ${EXPENSE_EVENTS_TOPIC:expense-events}
 
-# ── Email config ──
 app:
   email:
-    from: ${GMAIL_USERNAME:your-email@gmail.com}
-    from-name: Daily Life Tracker
+    from: ${MAIL_USERNAME}
+    from-name: ${APP_NAME:Tracker App}
 
-# ── Logging ──
 logging:
   level:
-    com.tracker.notification: DEBUG
-    org.springframework.security: DEBUG
+    com.tracker.notification: INFO
+    org.springframework.security: WARN
     org.springframework.kafka: WARN
-    org.springframework.mail: DEBUG
+    org.springframework.mail: WARN

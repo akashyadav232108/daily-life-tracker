@@ -1,48 +1,43 @@
 server:
-  port: 8084
+  port: ${PORT:8084}
 
 spring:
   application:
     name: expense-service
 
-  # ── MySQL ──
   datasource:
-    url: jdbc:mysql://localhost:3306/tracker_expense_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
+        format_sql: false
 
-  # ── Redis (monthly spend cache — atomic INCR/DECR per category) ──
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
 
-  # ── Kafka (producer only — publishes to expense-events topic) ──
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
-        # Fail fast if Kafka is down — don't block the HTTP request for 60s
         max.block.ms: 3000
         request.timeout.ms: 3000
         delivery.timeout.ms: 5000
 
-  # ── Jackson: Java 8 date/time serialization ──
   jackson:
     serialization:
       write-dates-as-timestamps: false
@@ -50,33 +45,29 @@ spring:
       fail-on-unknown-properties: false
     time-zone: UTC
 
-# ── JWT Configuration (shared secret — same as auth-service) ──
 jwt:
   secret: ${JWT_SECRET}
 
-# ── Kafka topic ──
 kafka:
   topic:
-    expense-events: expense-events
+    expense-events: ${EXPENSE_EVENTS_TOPIC:expense-events}
 
-# ── Rate Limiting (Bucket4j + Redis) ──
 rate-limit:
   global:
     tokens: 200
     refill-minutes: 1
     refill-hours: 0
-  write-heavy:             # POST /expenses/import (CSV bulk import)
+  write-heavy:
     tokens: 5
     refill-minutes: 0
     refill-hours: 1
-  summary-queries:         # GET /expenses/summary/monthly
+  summary-queries:
     tokens: 20
     refill-minutes: 1
     refill-hours: 0
 
-# ── Logging ──
 logging:
   level:
-    com.tracker.expense: DEBUG
-    org.springframework.security: DEBUG
+    com.tracker.expense: INFO
+    org.springframework.security: WARN
     org.springframework.kafka: WARN

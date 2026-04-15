@@ -7,7 +7,6 @@ COPY . .
 RUN chmod +x mvnw
 RUN ./mvnw clean package -DskipTests
 
-# Find exact jar instead of wildcard runtime issue
 RUN cp target/*.jar app.jar
 
 EXPOSE 8080

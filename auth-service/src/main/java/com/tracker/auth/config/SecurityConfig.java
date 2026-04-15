@@ -3,6 +3,8 @@ package com.tracker.auth.config;
 import com.tracker.auth.security.JwtAuthenticationEntryPoint;
 import com.tracker.auth.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -24,7 +26,7 @@ public class SecurityConfig {
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final CorsConfigurationSource corsConfigurationSource;
-    private final RateLimitingFilter rateLimitingFilter;
+    private final ObjectProvider<RateLimitingFilter> rateLimitingFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -71,11 +73,17 @@ public class SecurityConfig {
                 )
 
                 // Add JWT filter before Spring's default auth filter
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
                 // Rate-limiting runs AFTER JWT so SecurityContext is populated
                 // (authenticated requests keyed by userId, unauthenticated by IP)
-                .addFilterAfter(rateLimitingFilter, JwtAuthenticationFilter.class);
+                //.addFilterAfter(rateLimitingFilter, JwtAuthenticationFilter.class);
+        // ✅ SAFE optional filter addition
+        RateLimitingFilter filter = rateLimitingFilter.getIfAvailable();
+
+        if (filter != null) {
+            http.addFilterAfter(filter, JwtAuthenticationFilter.class);
+        }
 
         return http.build();
     }

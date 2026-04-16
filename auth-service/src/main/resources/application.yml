@@ -1,31 +1,23 @@
 server:
-  port: ${PORT:8080}
-  address: 0.0.0.0
+  port: ${PORT:8081}
 
 spring:
   application:
     name: auth-service
 
-# -- MySQl ---
-  #datasource:
-    #url: ${DB_URL}
-    #username: ${DB_USERNAME}
-    #password: ${DB_PASSWORD}
-    #driver-class-name: com.mysql.cj.jdbc.Driver
-
-#-- PostgreSQL --
-
   datasource:
     url: ${DB_URL}
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: false
-
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
 
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
@@ -35,10 +27,11 @@ spring:
       properties:
         spring.json.add.type.headers: false
 
-  # ✅ FIXED REDIS (IMPORTANT)
   data:
     redis:
-      url: ${REDIS_URL}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
       timeout: 2000ms
 
   mail:
@@ -67,35 +60,27 @@ otp:
   expiry-minutes: 10
   reset-token-expiry-minutes: 5
 
-rate:
-  limit:
-    enabled: false
-
-    global:
-      tokens: 200
-      refillMinutes: 1
-      refillHours: 0
-
-    authSensitive:
-      tokens: 5
-      refillMinutes: 1
-      refillHours: 0
-
-    otpFlow:
-      tokens: 3
-      refillMinutes: 10
-      refillHours: 0
-
-    passwordOps:
-      tokens: 5
-      refillMinutes: 10
-      refillHours: 0
-
-    accountDelete:
-      tokens: 3
-      refillMinutes: 0
-      refillHours: 1
-
+rate-limit:
+  global:
+    tokens: 200
+    refill-minutes: 1
+    refill-hours: 0
+  auth-sensitive:
+    tokens: 5
+    refill-minutes: 1
+    refill-hours: 0
+  otp-flow:
+    tokens: 3
+    refill-minutes: 10
+    refill-hours: 0
+  password-ops:
+    tokens: 5
+    refill-minutes: 10
+    refill-hours: 0
+  account-delete:
+    tokens: 3
+    refill-minutes: 0
+    refill-hours: 1
 
 logging:
   level:

@@ -7,7 +7,6 @@ import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.codec.ByteArrayCodec;
 import io.lettuce.core.codec.RedisCodec;
 import io.lettuce.core.codec.StringCodec;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -24,7 +23,6 @@ import java.time.Duration;
 public class RateLimitConfig {
 
     @Bean
-    @ConditionalOnProperty(name = "rate.limit.enabled", havingValue = "true", matchIfMissing = true)
     public LettuceBasedProxyManager<String> rateLimitProxyManager(RedisConnectionFactory connectionFactory) {
         LettuceConnectionFactory lettuceFactory = (LettuceConnectionFactory) connectionFactory;
         RedisClient nativeClient = (RedisClient) lettuceFactory.getNativeClient();

@@ -51,4 +51,8 @@ public class User {
     @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    //Token version used to invalidate all the instances on password change
+    @Column(nullable = false)
+    private Integer tokenVersion = 0;
 }

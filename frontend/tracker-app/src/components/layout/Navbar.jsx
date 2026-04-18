@@ -35,6 +35,13 @@ const Navbar = ({ onToggleSidebar }) => {
   // User confirmed logout
   const handleLogoutConfirm = () => {
     setShowLogoutConfirm(false);
+
+    // 🔥 Broadcast logout to other tabs
+      localStorage.setItem("event", JSON.stringify({
+        type: "LOGOUT",
+        time: Date.now()
+      }));
+
     dispatch(clearCredentials());
     toast.success('Logged out successfully');
     navigate('/login');

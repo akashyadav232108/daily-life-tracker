@@ -93,15 +93,21 @@ public class AuthService {
         // 2. Extract userId
         Long userId = jwtTokenProvider.getUserIdFromToken(refreshToken);
 
-        // 3. Check if the stored refresh token matches (prevents reuse of old tokens)
+        // 3. validate tokenVersion and fetch user
+        Integer tokenVersionFromToken = jwtTokenProvider.getTokenVersionFromToken(refreshToken);
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new InvalidCredentialsException("User not found"));
+
+        if (!user.getTokenVersion().equals(tokenVersionFromToken)) {
+            throw new InvalidCredentialsException("Session expired. Please login again.");
+        }
+
+        // 4. Check if the stored refresh token matches (prevents reuse of old tokens)
         String storedToken = tokenService.getRefreshToken(userId);
         if (storedToken == null || !storedToken.equals(refreshToken)) {
             throw new InvalidCredentialsException("Refresh token not recognized. Please login again.");
         }
-
-        // 4. Fetch user for latest role/email (role changes reflect on next refresh)
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new InvalidCredentialsException("User not found"));
 
         // 5. Check if user is still active
         if (!user.getIsActive()) {
@@ -131,8 +137,8 @@ public class AuthService {
     // ── Helper: Generate tokens + store refresh token in Redis ──
     private AuthResponse generateAndStoreTokens(User user) {
         String accessToken = jwtTokenProvider.generateAccessToken(
-                user.getId(), user.getEmail(), user.getRole().name());
-        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId());
+                user.getId(), user.getEmail(), user.getRole().name(), user.getTokenVersion());
+        String refreshToken = jwtTokenProvider.generateRefreshToken(user.getId(), user.getTokenVersion());
 
         // Store refresh token in Redis with TTL
         tokenService.storeRefreshToken(user.getId(), refreshToken, refreshTokenExpirationMs);

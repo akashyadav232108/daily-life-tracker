@@ -25,6 +25,13 @@ const ProfileForm = () => {
       const { data } = await authAPI.updateProfile({ fullName: fullName.trim(), telegramChatId: telegramChatId.trim() });
       dispatch(updateUser(data.data)); // data.data = UserResponse
       toast.success(data.message || 'Profile updated successfully');
+
+       // 🔥 Sync across tabs
+        localStorage.setItem("event", JSON.stringify({
+          type: "PROFILE_UPDATED",
+          time: Date.now()
+        }));
+
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to update profile');
     } finally {

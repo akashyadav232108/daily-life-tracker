@@ -1,60 +1,53 @@
 server:
-  port: 8082
+  port: ${PORT:8082}
 
 spring:
   application:
     name: task-service
 
-  # ── MySQL ──
   datasource:
-    url: jdbc:mysql://localhost:3306/tracker_task_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: ${DB_PASSWORD:root}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
-      ddl-auto: update
-    show-sql: true
+      ddl-auto: ${DDL_AUTO:update}
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
+        format_sql: false
 
-  # ── Kafka Producer ──
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
 
-  # ── Caching (Caffeine — configured programmatically in CacheConfig.java) ──
   cache:
     type: caffeine
 
-  # ── Redis (for rate limiting) ──
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
 
-# ── JWT Configuration (shared secret — same as auth-service) ──
 jwt:
-  secret: ${JWT_SECRET:YTJkZmFzZGZhc2RmYXNkZjEyMzQ1Njc4OTAxMjM0NTY3ODkwYXNkZmFzZGY=}
+  secret: ${JWT_SECRET}
 
-# ── Rate Limiting (Bucket4j + Redis) ──
 rate-limit:
   global:
     tokens: 200
     refill-minutes: 1
     refill-hours: 0
 
-# ── Logging ──
 logging:
   level:
-    com.tracker.task: DEBUG
-    org.springframework.security: DEBUG
+    com.tracker.task: INFO
+    org.springframework.security: WARN

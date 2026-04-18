@@ -26,7 +26,7 @@ public class JwtTokenProvider {
     }
 
     // ── Generate Access Token ──
-    public String generateAccessToken(Long userId, String email, String role) {
+    public String generateAccessToken(Long userId, String email, String role, Integer tokenVersion) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + accessTokenExpiration);
 
@@ -34,6 +34,7 @@ public class JwtTokenProvider {
                 .subject(String.valueOf(userId))
                 .claim("email", email)
                 .claim("role", role)
+                .claim("tokenVersion", tokenVersion)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(key)
@@ -41,12 +42,13 @@ public class JwtTokenProvider {
     }
 
     // ── Generate Refresh Token ──
-    public String generateRefreshToken(Long userId) {
+    public String generateRefreshToken(Long userId, Integer tokenVersion) {
         Date now = new Date();
         Date expiry = new Date(now.getTime() + refreshTokenExpiration);
 
         return Jwts.builder()
                 .subject(String.valueOf(userId))
+                .claim("tokenVersion", tokenVersion)
                 .issuedAt(now)
                 .expiration(expiry)
                 .signWith(key)
@@ -91,5 +93,11 @@ public class JwtTokenProvider {
     public long getRemainingExpiry(String token) {
         Date expiration = getClaims(token).getExpiration();
         return expiration.getTime() - System.currentTimeMillis();
+    }
+
+    //Get version of token
+    public Integer getTokenVersionFromToken(String token) {
+        Claims claims = getClaims(token);
+        return claims.get("tokenVersion", Integer.class);
     }
 }

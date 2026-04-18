@@ -1,103 +1,88 @@
 server:
-  port: 8081
+  port: ${PORT:8081}
 
 spring:
   application:
     name: auth-service
 
-  # ── MySQL ──
   datasource:
-    url: jdbc:mysql://localhost:3306/tracker_auth?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-    username: root
-    password: ${DB_PASSWORD:root}
+    url: ${DB_URL}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
     driver-class-name: com.mysql.cj.jdbc.Driver
 
   jpa:
     hibernate:
       ddl-auto: update
-    show-sql: true
+    show-sql: false
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
-        format_sql: true
 
-  # ── Kafka Producer ──
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS}
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
       properties:
         spring.json.add.type.headers: false
 
-  # ── Redis (for JWT blacklisting & refresh tokens & OTP) ──
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
+      host: ${REDIS_HOST}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
       timeout: 2000ms
 
-  # ── Email (Gmail SMTP) ──
   mail:
     host: smtp.gmail.com
     port: 587
-    username: dailtytracker@gmail.com
-    password: mmvxjtixjiufepxw
+    username: ${SENDER_MAIL}
+    password: ${MAIL_PASSWORD}
     properties:
       mail.smtp.auth: true
       mail.smtp.starttls.enable: true
-      mail.smtp.connectiontimeout: 5000
-      mail.smtp.timeout: 3000
-      mail.smtp.writetimeout: 5000
 
-  # ── Thymeleaf (disable web auto-config — email-only templates) ──
   thymeleaf:
     check-template-location: false
 
-# ── JWT Configuration ──
 jwt:
-  secret: ${JWT_SECRET:YTJkZmFzZGZhc2RmYXNkZjEyMzQ1Njc4OTAxMjM0NTY3ODkwYXNkZmFzZGY=}
-  access-token-expiration: 900000       # 15 minutes (in milliseconds)
-  refresh-token-expiration: 604800000   # 7 days (in milliseconds)
+  secret: ${JWT_SECRET}
+  access-token-expiration: 900000
+  refresh-token-expiration: 604800000
 
-# ── Email sender config ──
 app:
   email:
-    from: dailtytracker@gmail.com
-    from-name: DailyTracker
+    from: ${SENDER_MAIL}
+    from-name: ${APP_NAME}
 
-# ── OTP config ──
 otp:
-  expiry-minutes: 10               # How long the 6-digit OTP is valid
-  reset-token-expiry-minutes: 5    # How long the post-OTP reset token is valid
+  expiry-minutes: 10
+  reset-token-expiry-minutes: 5
 
-# ── Rate Limiting (Bucket4j + Redis) ──
 rate-limit:
   global:
     tokens: 200
     refill-minutes: 1
     refill-hours: 0
-  auth-sensitive:          # POST /login, /register
+  auth-sensitive:
     tokens: 5
     refill-minutes: 1
     refill-hours: 0
-  otp-flow:                # /forgot-password, /verify-otp, /reset-password
+  otp-flow:
     tokens: 3
     refill-minutes: 10
     refill-hours: 0
-  password-ops:            # PUT /me/password
+  password-ops:
     tokens: 5
     refill-minutes: 10
     refill-hours: 0
-  account-delete:          # DELETE /me
+  account-delete:
     tokens: 3
     refill-minutes: 0
     refill-hours: 1
 
-# ── Logging ──
 logging:
   level:
-    com.tracker.auth: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.mail: DEBUG
+    com.tracker.auth: INFO
+    org.springframework.security: WARN

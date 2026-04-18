@@ -36,6 +36,13 @@ const LoginForm = () => {
       if (response.data.success) {
         const { accessToken, refreshToken, user } = response.data.data;
         dispatch(setCredentials({ accessToken, refreshToken, user }));
+
+        // 🔥 Broadcast login to other tabs
+          localStorage.setItem("event", JSON.stringify({
+            type: "LOGIN",
+            time: Date.now()
+          }));
+
         toast.success('Login successful!');
         navigate('/');
       } else {

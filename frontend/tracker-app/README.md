@@ -1,16 +1,57 @@
-# React + Vite
+# Tracker App (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+React SPA for the Daily Life Tracker platform. Talks to all backend microservices via REST.
 
-Currently, two official plugins are available:
+**Port:** 5173 (dev)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Architecture
 
-## React Compiler
+```mermaid
+flowchart LR
+  User --> App[React App]
+  App --> Auth[8081]
+  App --> Task[8082]
+  App --> Health[8083]
+  App --> Expense[8084]
+  App --> Notif[8085]
+```
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+| Route | Page |
+|-------|------|
+| `/` | Dashboard |
+| `/tasks` | Task management |
+| `/health` | Health logs |
+| `/exercise` | Exercise plans and logs |
+| `/expenses` | Expenses and budgets |
+| `/notifications` | Notifications and insights |
+| `/profile` | User profile |
+| `/admin` | Admin dashboard |
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Auth routes: `/login`, `/register`, `/forgot-password`, `/verify-otp`, `/reset-password`
+
+## Stack
+
+React 19, Vite, Redux Toolkit, React Router, Tailwind CSS, Axios
+
+## Environment Variables
+
+Copy `.env.example` to `.env`:
+
+```
+VITE_AUTH_SERVICE_URL=http://localhost:8081
+VITE_TASK_SERVICE_URL=http://localhost:8082
+VITE_HEALTH_SERVICE_URL=http://localhost:8083
+VITE_EXPENSE_SERVICE_URL=http://localhost:8084
+VITE_NOTIFICATION_SERVICE_URL=http://localhost:8085
+```
+
+## Run
+
+```bash
+npm install
+npm run dev
+```
+
+Open `http://localhost:5173`. Backend services must be running first.

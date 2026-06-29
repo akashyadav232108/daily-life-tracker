@@ -14,29 +14,28 @@ A microservices-based personal tracker for tasks, health, exercise, expenses, an
 ## Architecture
 
 ```mermaid
-flowchart LR
-  FE[React App] --> AUTH[auth-service]
-  FE --> TASK[task-service]
-  FE --> HEALTH[health-service]
-  FE --> EXP[expense-service]
-  FE --> NOTIF[notification-service]
+flowchart TB
+  User --> FE[React App :5173]
 
-  AUTH --> MySQL[(MySQL)]
-  TASK --> MySQL
-  HEALTH --> MySQL
-  EXP --> MySQL
-  NOTIF --> MySQL
+  subgraph Services
+    direction LR
+    A[auth :8081]
+    T[task :8082]
+    H[health :8083]
+    E[expense :8084]
+    N[notification :8085]
+  end
 
-  AUTH --> Redis[(Redis)]
-  TASK --> Redis
-  HEALTH --> Redis
-  EXP --> Redis
-  NOTIF --> Redis
+  subgraph Infra
+    direction LR
+    DB[(MySQL)]
+    R[(Redis)]
+    K[Kafka]
+  end
 
-  TASK --> Kafka{{Kafka}}
-  HEALTH --> Kafka
-  EXP --> Kafka
-  Kafka --> NOTIF
+  FE --> Services
+  Services --> Infra
+  K --> N
 ```
 
 ## Tech Stack

@@ -1,5 +1,7 @@
 # Notification Service
 
+> **[← Back to Main Project](../../README.md)** | **[API Docs](../../docs/API.md#notification-service-apis-8085)** | **[Architecture](../../docs/ARCHITECTURE.md)**
+
 Delivers in-app notifications, email alerts, daily insights, and streak tracking.
 
 **Port:** 8085
@@ -57,8 +59,33 @@ Admin routes under `/api/notifications/admin`.
 | `MAIL_USERNAME`, `MAIL_PASSWORD` | Email sending |
 | `KAFKA_CONSUMER_GROUP` | Consumer group |
 
+## Database
+
+Creates tables automatically in `tracker_notifications`:
+- `notifications` - In-app notifications
+- `activity_streaks` - User streak tracking
+
+**Full Schema**: [docs/DATABASE-SCHEMA.md](../../docs/DATABASE-SCHEMA.md#notification-service-database-tracker_notifications)
+
 ## Run
 
 ```bash
+# From backend/notification-service directory
 mvn spring-boot:run
 ```
+
+**Note**: Start this service **after** other services as it consumes their events.
+
+## Troubleshooting
+
+**Common issues:**
+- Not receiving events: Check Kafka is running and other services are publishing
+- Email not sending: Verify SMTP credentials (use Gmail App Password)
+- Consumer lag: Check Kafka consumer group status
+
+**More help**: [docs/TROUBLESHOOTING.md](../../docs/TROUBLESHOOTING.md)
+
+## Documentation
+
+- [Complete API Reference](../../docs/API.md#notification-service-apis-8085)
+- [Kafka Events Consumed](../../docs/KAFKA-EVENTS.md#consumer-services)

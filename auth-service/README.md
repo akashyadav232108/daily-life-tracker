@@ -1,5 +1,7 @@
 # Auth Service
 
+> **[← Back to Main Project](../README.md)** | **[API Docs](../docs/API.md#auth-service-apis-8081)** | **[Architecture](../docs/ARCHITECTURE.md)**
+
 Handles user registration, login, JWT tokens, profile management, and admin user operations.
 
 **Port:** 8081
@@ -50,8 +52,44 @@ flowchart LR
 | `KAFKA_BOOTSTRAP_SERVERS` | Event publishing |
 | `SENDER_MAIL`, `MAIL_PASSWORD` | OTP emails |
 
+## Database
+
+Creates tables automatically in `tracker_auth`:
+- `users` - User accounts and credentials
+
+**Full Schema**: [docs/DATABASE-SCHEMA.md](../docs/DATABASE-SCHEMA.md#auth-service-database-tracker_auth)
+
 ## Run
 
 ```bash
+# From auth-service directory
 mvn spring-boot:run
+
+# Or with custom port
+mvn spring-boot:run -Dspring-boot.run.arguments=--server.port=9081
 ```
+
+## Testing
+
+```bash
+# Run tests
+mvn test
+
+# Build JAR
+mvn clean package
+```
+
+## Troubleshooting
+
+**Service won't start?**
+- Ensure MySQL is running and `tracker_auth` database exists
+- Verify Redis is running: `redis-cli ping`
+- Check environment variables are set
+
+**More help**: [docs/TROUBLESHOOTING.md](../docs/TROUBLESHOOTING.md)
+
+## Documentation
+
+- [Complete API Reference](../docs/API.md#auth-service-apis-8081)
+- [Setup Guide](../docs/SETUP.md)
+- [Kafka Events Published](../docs/KAFKA-EVENTS.md#user-events)

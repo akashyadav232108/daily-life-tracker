@@ -103,11 +103,23 @@ const createAxiosInstance = (baseURL) => {
         } catch (refreshError) {
           processQueue(refreshError, null);
 
+          console.log("Refresh failed → logging out from all tabs/devices");
+
           // Clear auth data and redirect to login
           localStorage.removeItem('accessToken');
           localStorage.removeItem('refreshToken');
           localStorage.removeItem('user');
-          window.location.href = '/login';
+
+          // Notify ALL tabs
+            localStorage.setItem(
+              "event",
+              JSON.stringify({ type: "LOGOUT", time: Date.now() })
+            );
+
+          // Redirect current tab
+          if (window.location.pathname !== '/login') {
+            window.location.href = '/login';
+          }
 
           return Promise.reject(refreshError);
         } finally {

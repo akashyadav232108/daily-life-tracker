@@ -63,6 +63,12 @@ public class UserService {
         }
 
         user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+
+        // Invalidate all old tokens
+        user.setTokenVersion(
+                user.getTokenVersion() == null ? 1 : user.getTokenVersion() + 1
+        );
+
         userRepository.save(user);
     }
 

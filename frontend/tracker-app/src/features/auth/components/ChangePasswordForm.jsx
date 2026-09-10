@@ -32,7 +32,23 @@ const ChangePasswordForm = () => {
     setLoading(true);
     try {
       const { data } = await authAPI.changePassword({ currentPassword, newPassword });
-      toast.success(data.message || 'Password changed successfully');
+      toast.success("Password changed successfully. Please log in again.");
+
+      // logout after password change
+        localStorage.setItem(
+          "event",
+          JSON.stringify({ type: "LOGOUT", time: Date.now() })
+        );
+
+      // logout current tab immediately
+        localStorage.removeItem('accessToken');
+        localStorage.removeItem('refreshToken');
+        localStorage.removeItem('user');
+
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 1500);
+
       // Clear form
       setCurrentPassword('');
       setNewPassword('');

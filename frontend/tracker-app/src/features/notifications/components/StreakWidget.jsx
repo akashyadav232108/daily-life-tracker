@@ -1,84 +1,97 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { HiFire } from 'react-icons/hi2';
-import { fetchStreaks, selectStreaks, selectInsightsLoading } from '../notificationSlice';
+import {
+  fetchStreaks,
+  selectStreaks,
+  selectNotifLoading,
+} from '../notificationSlice';
 
 const STREAK_META = {
-  HEALTH_LOG:    { icon: '❤️', label: 'Health Log',     bar: 'bg-pink-400' },
-  TASK_COMPLETE: { icon: '✅', label: 'Tasks',           bar: 'bg-blue-400' },
-  EXERCISE:      { icon: '🔥', label: 'Exercise',        bar: 'bg-orange-400' },
+  HEALTH_LOG:    { icon: '❤️', label: 'Health Log',   bar: 'from-pink-400 to-rose-500'    },
+  TASK_COMPLETE: { icon: '✅', label: 'Task Streak',  bar: 'from-blue-400 to-indigo-500'  },
+  EXERCISE:      { icon: '🔥', label: 'Exercise',     bar: 'from-orange-400 to-amber-500' },
 };
 
-/**
- * Compact streak widget — shown on the Dashboard.
- * Fetches streaks from notification-service and displays each as a mini card.
- */
 const StreakWidget = () => {
   const dispatch = useDispatch();
   const streaks  = useSelector(selectStreaks);
-  const loading  = useSelector(selectInsightsLoading);
+  const loading  = useSelector(selectNotifLoading);
 
+  // ── All data-fetching logic unchanged ──
   useEffect(() => {
     dispatch(fetchStreaks());
   }, [dispatch]);
 
-  if (loading) {
-    return (
-      <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <div className="h-4 w-24 animate-pulse rounded bg-gray-100" />
-        <div className="mt-4 grid grid-cols-3 gap-3">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-16 animate-pulse rounded-lg bg-gray-100" />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  if (loading) return null;
 
-  if (streaks.length === 0) {
+  if (!streaks || streaks.length === 0) {
     return (
-      <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gray-200 bg-white p-6 text-center shadow-sm">
-        <HiFire className="h-8 w-8 text-gray-300" />
-        <p className="text-sm font-medium text-gray-500">No streaks yet</p>
-        <p className="text-xs text-gray-400">
-          Complete tasks, log health and exercise to build streaks!
-        </p>
+      <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+        <div className="flex items-center gap-2 mb-3">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50">
+            <HiFire className="h-4 w-4 text-orange-500" />
+          </div>
+          <h3 className="font-semibold text-gray-900">Your Streaks</h3>
+        </div>
+        <p className="text-sm text-gray-400">Start logging daily to build your streaks!</p>
       </div>
     );
   }
 
   return (
-    <div className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-      <div className="mb-4 flex items-center gap-2">
-        <HiFire className="h-5 w-5 text-orange-500" />
+    <div className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
+      <div className="mb-4 flex items-center gap-2.5">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50">
+          <HiFire className="h-4 w-4 text-orange-500" />
+        </div>
         <h3 className="font-semibold text-gray-900">Your Streaks 🔥</h3>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
         {streaks.map((s) => {
-          const meta = STREAK_META[s.streakType] || { icon: '⚡', label: s.streakType, bar: 'bg-gray-400' };
-          const pct  = s.longestStreak > 0
+          const meta = STREAK_META[s.streakType] || {
+            icon: '⚡',
+            label: s.streakType,
+            bar: 'from-gray-400 to-gray-500',
+          };
+          const pct = s.longestStreak > 0
             ? Math.round((s.currentStreak / s.longestStreak) * 100)
             : 100;
 
           return (
-            <div key={s.streakType} className="flex flex-col gap-2 rounded-lg bg-gray-50 p-3">
-              <div className="flex items-center gap-2">
-                <span className="text-lg">{meta.icon}</span>
-                <span className="text-xs font-medium text-gray-600">{meta.label}</span>
+            <div
+              key={s.streakType}
+              className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-gray-50 to-gray-100 p-4 ring-1 ring-gray-200"
+            >
+              {/* Icon + label */}
+              <div className="mb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-xl">{meta.icon}</span>
+                  <span className="text-xs font-semibold text-gray-600">{meta.label}</span>
+                </div>
+                {s.currentStreak > 0 && (
+                  <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-bold text-gray-500 shadow-sm ring-1 ring-gray-200">
+                    Best: {s.longestStreak}d
+                  </span>
+                )}
               </div>
-              <div className="flex items-end justify-between">
-                <span className="text-2xl font-bold text-gray-900">{s.currentStreak}</span>
-                <span className="text-xs text-gray-400">/{s.longestStreak} best</span>
+
+              {/* Number */}
+              <div className="mb-3 flex items-end gap-1">
+                <span className="text-3xl font-bold text-gray-900 leading-none">{s.currentStreak}</span>
+                <span className="mb-0.5 text-sm text-gray-400">days</span>
               </div>
-              {/* Progress bar: current vs longest */}
+
+              {/* Progress bar */}
               <div className="h-1.5 w-full overflow-hidden rounded-full bg-gray-200">
                 <div
-                  className={`h-full rounded-full transition-all ${meta.bar}`}
+                  className={`h-full rounded-full bg-gradient-to-r transition-all duration-700 ${meta.bar}`}
                   style={{ width: `${Math.min(pct, 100)}%` }}
                 />
               </div>
-              <p className="text-[10px] text-gray-400">
+
+              <p className="mt-2 text-[11px] text-gray-400">
                 {s.currentStreak === 0
                   ? 'Start today!'
                   : `${s.currentStreak} day${s.currentStreak !== 1 ? 's' : ''} in a row`}

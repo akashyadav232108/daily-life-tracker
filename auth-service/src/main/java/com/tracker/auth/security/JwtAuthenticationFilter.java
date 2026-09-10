@@ -1,5 +1,7 @@
 package com.tracker.auth.security;
 
+import com.tracker.auth.model.entity.User;
+import com.tracker.auth.repository.UserRepository;
 import com.tracker.auth.service.TokenService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -20,7 +22,6 @@ import java.util.List;
 
 /**
  * JWT Authentication Filter — runs on every request.
- *
  * Flow:
  * 1. Extract token from "Authorization: Bearer <token>" header
  * 2. Validate the token (signature + expiry)
@@ -34,6 +35,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final TokenService tokenService;
+    private final UserRepository userRepository;
+
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -55,6 +58,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Long userId = jwtTokenProvider.getUserIdFromToken(token);
                 String email = jwtTokenProvider.getEmailFromToken(token);
                 String role = jwtTokenProvider.getRoleFromToken(token);
+
+                //extract tokenVersion from token
+                Integer tokenVersionFromToken = jwtTokenProvider.getTokenVersionFromToken(token);
+
+                //Fetch user from DB
+                User user = userRepository.findById(userId)
+                        .orElseThrow(() -> new RuntimeException("User not found"));
+
+                //Validate tokenVersion
+                if (tokenVersionFromToken == null ||
+                        !user.getTokenVersion().equals(tokenVersionFromToken)) {
+                    log.debug("Token version mismatch — rejecting request");
+                    filterChain.doFilter(request, response);
+                    return;
+                }
 
                 // Spring Security expects "ROLE_" prefix for hasRole() checks
                 List<SimpleGrantedAuthority> authorities = List.of(

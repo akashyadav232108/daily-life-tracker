@@ -6,6 +6,7 @@ import {
   selectStreaks,
   selectNotifLoading,
 } from '../notificationSlice';
+import useAuth from '../../../hooks/useAuth';
 
 const STREAK_META = {
   HEALTH_LOG:    { icon: '❤️', label: 'Health Log',   bar: 'from-pink-400 to-rose-500'    },
@@ -15,13 +16,14 @@ const STREAK_META = {
 
 const StreakWidget = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
   const streaks  = useSelector(selectStreaks);
   const loading  = useSelector(selectNotifLoading);
 
-  // ── All data-fetching logic unchanged ──
   useEffect(() => {
+    if (!isAuthenticated) return;
     dispatch(fetchStreaks());
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated]);
 
   if (loading) return null;
 

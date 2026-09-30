@@ -10,6 +10,7 @@ import {
   HiSquares2X2,
   HiLockClosed,
   HiXMark,
+  HiInformationCircle,
 } from 'react-icons/hi2';
 import { useSelector } from 'react-redux';
 import { selectUnreadCount } from '../../features/notifications/notificationSlice';
@@ -22,6 +23,7 @@ const navItems = [
   { to: '/exercise', icon: HiBolt, label: 'Exercise' },
   { to: '/expenses', icon: HiCurrencyDollar, label: 'Expenses' },
   { to: '/notifications', icon: HiBell, label: 'Notifications', badge: true },
+  { to: '/about', icon: HiInformationCircle, label: 'About Us' },
 ];
 
 const adminItems = [
@@ -31,7 +33,7 @@ const adminItems = [
 ];
 
 const Sidebar = ({ isOpen, onClose }) => {
-  const { isAdmin, isSuperAdmin } = useAuth();
+  const { isAdmin, isSuperAdmin, isAuthenticated } = useAuth();
   const unreadCount = useSelector(selectUnreadCount);
 
   const linkClass = ({ isActive }) =>
@@ -90,7 +92,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                   Soon
                 </span>
               )}
-              {item.badge && unreadCount > 0 && (
+              {item.badge && isAuthenticated && unreadCount > 0 && (
                 <span className="ml-auto flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
                   {unreadCount > 9 ? '9+' : unreadCount}
                 </span>
@@ -98,8 +100,8 @@ const Sidebar = ({ isOpen, onClose }) => {
             </NavLink>
           ))}
 
-          {/* Admin section */}
-          {isAdmin && (
+          {/* Admin section — authenticated admins only */}
+          {isAuthenticated && isAdmin && (
             <>
               {/* Section header with role badge */}
               <div className="mt-6 mb-2 flex shrink-0 items-center gap-2 px-3">

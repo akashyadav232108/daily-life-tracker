@@ -18,9 +18,11 @@ import ExerciseLogForm from '../components/ExerciseLogForm';
 import ExerciseLogList from '../components/ExerciseLogList';
 import { HiBolt, HiClipboardDocumentList, HiCalendarDays } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import useAuth from '../../../hooks/useAuth';
 
 const ExercisePage = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
   const plans = useSelector(selectPlans);
   const activePlan = useSelector(selectActivePlan);
   const today = useSelector(selectTodayPlanned);
@@ -28,11 +30,12 @@ const ExercisePage = () => {
   const error = useSelector(selectExerciseError);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     dispatch(fetchPlans());
     dispatch(fetchActivePlan());
     dispatch(fetchTodayPlanned());
     dispatch(fetchExerciseLogs({ view: 'week' }));
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
     if (error) {

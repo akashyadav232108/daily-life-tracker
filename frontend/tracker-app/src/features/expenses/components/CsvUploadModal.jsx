@@ -19,6 +19,7 @@ import {
   HiArrowDownTray,
 } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 // ─── CSV Template Download ─────────────────────────────────────────
 const TEMPLATE_HEADERS = 'date,type,amount,description,category,payment_method';
@@ -45,6 +46,7 @@ const downloadTemplate = () => {
 
 export default function CsvUploadModal({ isOpen, onClose }) {
   const dispatch = useDispatch();
+  const { requireAuth } = useRequireAuth();
   const importing = useSelector(selectImporting);
   const importResult = useSelector(selectImportResult);
   const filters = useSelector(selectExpenseFilters);
@@ -83,6 +85,7 @@ export default function CsvUploadModal({ isOpen, onClose }) {
       toast.error('Please select a CSV file first');
       return;
     }
+    if (!requireAuth()) return;
     const result = await dispatch(importExpensesFromCsv(selectedFile));
     if (importExpensesFromCsv.fulfilled.match(result)) {
       const { imported, skipped } = result.payload;
@@ -105,32 +108,50 @@ export default function CsvUploadModal({ isOpen, onClose }) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-4">
-      <div className="w-full max-w-lg rounded-2xl bg-white shadow-xl">
+    <div className="fixed inset-0 z-50 flex items-end justify-center p-0 sm:items-center sm:p-4">
+      {/* Backdrop */}
+      <div
+        className="fixed inset-0 bg-black/50 transition-opacity"
+        onClick={handleClose}
+        aria-hidden="true"
+      />
 
-        {/* Header */}
-        <div className="flex items-center justify-between border-b border-gray-100 px-6 py-4">
-          <div className="flex items-center gap-2">
-            <HiArrowUpTray className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold text-gray-900">Import from CSV</h2>
+      {/* Panel — capped to viewport; body scrolls so header/footer stay visible */}
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="csv-import-title"
+        className="relative z-10 flex w-full max-w-lg max-h-[92vh] flex-col overflow-hidden
+                   rounded-t-2xl bg-white shadow-xl sm:rounded-2xl"
+      >
+        {/* Header — sticky */}
+        <div className="flex shrink-0 items-center justify-between border-b border-gray-100 px-4 py-3 sm:px-6 sm:py-4">
+          <div className="flex min-w-0 items-center gap-2">
+            <HiArrowUpTray className="h-5 w-5 shrink-0 text-primary" />
+            <h2 id="csv-import-title" className="truncate text-base font-semibold text-gray-900 sm:text-lg">
+              Import from CSV
+            </h2>
           </div>
           <button
+            type="button"
             onClick={handleClose}
-            className="rounded-lg p-1.5 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+            className="rounded-lg p-1.5 text-gray-400 transition-colors hover:bg-gray-100 hover:text-gray-600"
+            aria-label="Close"
           >
             <HiXMark className="h-5 w-5" />
           </button>
         </div>
 
-        <div className="space-y-4 px-6 py-5">
-
+        {/* Scrollable body */}
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overscroll-contain px-4 py-4 sm:px-6 sm:py-5">
           {/* Format guide */}
-          <div className="rounded-lg bg-blue-50 p-4 text-sm text-blue-800">
-            <p className="font-medium mb-1">CSV Format (header row required)</p>
-            <code className="block text-xs bg-blue-100 rounded px-2 py-1 font-mono break-all">
+          <div className="rounded-lg bg-blue-50 p-3 text-sm text-blue-800 sm:p-4">
+            <p className="mb-1 font-medium">CSV Format (header row required)</p>
+            <code className="block overflow-x-auto rounded bg-blue-100 px-2 py-1 font-mono text-[11px]
+                             leading-relaxed whitespace-nowrap sm:text-xs">
               date, type, amount, description, category, payment_method
             </code>
-            <ul className="mt-2 space-y-0.5 text-xs text-blue-700 list-disc list-inside">
+            <ul className="mt-2 list-inside list-disc space-y-0.5 text-xs text-blue-700">
               <li><strong>date</strong> — YYYY-MM-DD (required)</li>
               <li><strong>type</strong> — INCOME or EXPENSE (required)</li>
               <li><strong>amount</strong> — positive number (required)</li>
@@ -142,20 +163,22 @@ export default function CsvUploadModal({ isOpen, onClose }) {
 
           {/* Template download */}
           <button
+            type="button"
             onClick={downloadTemplate}
-            className="flex items-center gap-2 text-sm text-primary hover:underline"
+            className="flex items-center gap-2 text-sm text-primary transition-colors hover:underline"
           >
-            <HiArrowDownTray className="h-4 w-4" />
+            <HiArrowDownTray className="h-4 w-4 shrink-0" />
             Download sample template
           </button>
 
-          {/* Drop zone */}
+          {/* Drop zone — tighter padding on small screens */}
           <div
             onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
             onDragLeave={() => setDragOver(false)}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-colors
+            className={`cursor-pointer rounded-xl border-2 border-dashed p-5 text-center transition-colors
+                        sm:p-8
               ${dragOver ? 'border-primary bg-primary/5' : 'border-gray-200 hover:border-primary/50 hover:bg-gray-50'}`}
           >
             <input
@@ -167,16 +190,18 @@ export default function CsvUploadModal({ isOpen, onClose }) {
             />
             {selectedFile ? (
               <div className="flex flex-col items-center gap-2">
-                <HiDocumentText className="h-10 w-10 text-primary" />
-                <p className="font-medium text-gray-800">{selectedFile.name}</p>
+                <HiDocumentText className="h-9 w-9 text-primary sm:h-10 sm:w-10" />
+                <p className="max-w-full truncate font-medium text-gray-800 px-2">{selectedFile.name}</p>
                 <p className="text-xs text-gray-500">
                   {(selectedFile.size / 1024).toFixed(1)} KB — click to change
                 </p>
               </div>
             ) : (
               <div className="flex flex-col items-center gap-2 text-gray-400">
-                <HiArrowUpTray className="h-10 w-10" />
-                <p className="font-medium">Drop your CSV here or click to browse</p>
+                <HiArrowUpTray className="h-9 w-9 sm:h-10 sm:w-10" />
+                <p className="px-2 text-sm font-medium sm:text-base">
+                  Drop your CSV here or click to browse
+                </p>
                 <p className="text-xs">Only .csv files accepted</p>
               </div>
             )}
@@ -184,13 +209,12 @@ export default function CsvUploadModal({ isOpen, onClose }) {
 
           {/* Import Result */}
           {importResult && (
-            <div className="rounded-xl border border-gray-100 bg-gray-50 p-4 space-y-3">
-              {/* Summary */}
+            <div className="space-y-3 rounded-xl border border-gray-100 bg-gray-50 p-4">
               <div className="flex items-center gap-2">
                 {importResult.skipped === 0 ? (
-                  <HiCheckCircle className="h-5 w-5 text-green-500 shrink-0" />
+                  <HiCheckCircle className="h-5 w-5 shrink-0 text-green-500" />
                 ) : (
-                  <HiExclamationTriangle className="h-5 w-5 text-yellow-500 shrink-0" />
+                  <HiExclamationTriangle className="h-5 w-5 shrink-0 text-yellow-500" />
                 )}
                 <p className="text-sm font-medium text-gray-800">
                   {importResult.imported} of {importResult.totalRows} rows imported
@@ -200,9 +224,8 @@ export default function CsvUploadModal({ isOpen, onClose }) {
                 </p>
               </div>
 
-              {/* Per-row errors */}
               {importResult.errors?.length > 0 && (
-                <div className="max-h-36 overflow-y-auto space-y-1">
+                <div className="max-h-28 space-y-1 overflow-y-auto sm:max-h-36">
                   {importResult.errors.map((e) => (
                     <div key={e.row} className="flex gap-2 text-xs text-red-600">
                       <span className="shrink-0 font-medium">Row {e.row}:</span>
@@ -215,20 +238,22 @@ export default function CsvUploadModal({ isOpen, onClose }) {
           )}
         </div>
 
-        {/* Footer */}
-        <div className="flex justify-end gap-3 border-t border-gray-100 px-6 py-4">
+        {/* Footer — sticky */}
+        <div className="flex shrink-0 justify-end gap-3 border-t border-gray-100 px-4 py-3 sm:px-6 sm:py-4">
           <button
+            type="button"
             onClick={handleClose}
-            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 hover:bg-gray-100"
+            className="rounded-lg px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
           >
             {importResult ? 'Close' : 'Cancel'}
           </button>
           {!importResult && (
             <button
+              type="button"
               onClick={handleImport}
               disabled={!selectedFile || importing}
               className="flex items-center gap-2 rounded-lg bg-primary px-5 py-2 text-sm font-medium text-white
-                         hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                         transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
             >
               {importing ? (
                 <>
@@ -248,7 +273,6 @@ export default function CsvUploadModal({ isOpen, onClose }) {
             </button>
           )}
         </div>
-
       </div>
     </div>
   );

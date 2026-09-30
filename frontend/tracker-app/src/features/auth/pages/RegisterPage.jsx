@@ -1,7 +1,7 @@
-import { Navigate } from 'react-router-dom';
+import { Link, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import RegisterForm from '../components/RegisterForm';
-import { HiBolt, HiShieldCheck, HiChartBar, HiSparkles } from 'react-icons/hi2';
+import { HiBolt, HiShieldCheck, HiChartBar, HiSparkles, HiArrowLeft } from 'react-icons/hi2';
 
 const perks = [
   { icon: HiShieldCheck, text: 'Your data is private & secure' },
@@ -12,10 +12,23 @@ const perks = [
 
 const RegisterPage = () => {
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const navigate = useNavigate();
+  const from = location.state?.from || '/';
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={from} replace />;
   }
+
+  const handleBack = () => {
+    if (location.state?.from) {
+      navigate(from);
+    } else if (window.history.length > 1) {
+      navigate(-1);
+    } else {
+      navigate('/');
+    }
+  };
 
   return (
     <div className="flex min-h-screen">
@@ -79,9 +92,23 @@ const RegisterPage = () => {
       </div>
 
       {/* ── RIGHT PANEL ── */}
-      <div className="flex flex-1 flex-col items-center justify-center bg-gray-50 px-6 py-12 sm:px-12">
+      <div className="flex flex-1 flex-col items-center justify-center bg-gray-50 px-4 py-10 sm:px-12 sm:py-12">
+        <div className="mb-6 w-full max-w-[420px] sm:mb-8">
+          <button
+            type="button"
+            onClick={handleBack}
+            className="inline-flex max-w-full items-center gap-1.5 rounded-xl border border-teal-100
+                       bg-white px-3 py-2 text-sm font-medium text-teal-800 shadow-sm
+                       transition-all hover:border-teal-200 hover:bg-teal-50/70 hover:text-teal-900
+                       focus:outline-none focus:ring-2 focus:ring-teal-200/80"
+          >
+            <HiArrowLeft className="h-4 w-4 shrink-0" />
+            <span className="truncate">Continue browsing</span>
+          </button>
+        </div>
+
         {/* Mobile logo */}
-        <div className="mb-8 flex items-center gap-2 lg:hidden">
+        <div className="mb-6 flex items-center gap-2 sm:mb-8 lg:hidden">
           <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-600">
             <HiBolt className="h-4 w-4 text-white" />
           </div>
@@ -93,9 +120,13 @@ const RegisterPage = () => {
             <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
             <p className="mt-1.5 text-sm text-gray-500">
               Already have an account?{' '}
-              <a href="/login" className="font-medium text-primary hover:text-primary-dark">
+              <Link
+                to="/login"
+                state={{ from }}
+                className="font-medium text-primary hover:text-primary-dark"
+              >
                 Sign in
-              </a>
+              </Link>
             </p>
           </div>
 

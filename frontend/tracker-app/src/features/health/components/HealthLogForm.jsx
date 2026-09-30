@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { upsertHealthLog, fetchHealthLogs, fetchWeeklySummary, selectHealthLoading } from '../healthSlice';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 const moodOptions = [
   { value: '', label: 'Select mood…' },
@@ -25,6 +26,7 @@ const initial = {
 const HealthLogForm = () => {
   const dispatch = useDispatch();
   const loading = useSelector(selectHealthLoading);
+  const { requireAuth } = useRequireAuth();
   const [form, setForm] = useState(initial);
 
   const onChange = (e) => {
@@ -38,6 +40,7 @@ const HealthLogForm = () => {
       toast.error('Please select a date.');
       return;
     }
+    if (!requireAuth()) return;
     const payload = {
       ...form,
       waterGlasses: form.waterGlasses !== '' ? Number(form.waterGlasses) : null,

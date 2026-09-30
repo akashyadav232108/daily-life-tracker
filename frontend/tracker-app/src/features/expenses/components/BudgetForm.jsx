@@ -4,6 +4,7 @@ import { createBudget, updateBudget, selectExpenseLoading } from '../expenseSlic
 import { EXPENSE_CATEGORIES } from '../../../utils/constants';
 import { HiXMark } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 /**
  * Modal form for setting / updating a monthly budget.
@@ -17,6 +18,7 @@ import toast from 'react-hot-toast';
 const BudgetForm = ({ isOpen, onClose, editingBudget = null, currentMonth }) => {
   const dispatch = useDispatch();
   const loading = useSelector(selectExpenseLoading);
+  const { requireAuth } = useRequireAuth();
   const isEditing = !!editingBudget;
 
   const [formData, setFormData] = useState(() => ({
@@ -45,6 +47,7 @@ const BudgetForm = ({ isOpen, onClose, editingBudget = null, currentMonth }) => 
       toast.error('Monthly limit must be greater than 0');
       return;
     }
+    if (!requireAuth()) return;
 
     const payload = {
       ...formData,

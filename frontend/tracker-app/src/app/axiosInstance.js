@@ -63,6 +63,13 @@ const createAxiosInstance = (baseURL) => {
 
       // If 401 and we haven't retried yet and NOT an auth endpoint
       if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+        // Pure guest (no tokens) — reject quietly so guest browsing is not forced to /login
+        const accessToken = localStorage.getItem('accessToken');
+        const refreshToken = localStorage.getItem('refreshToken');
+        if (!accessToken && !refreshToken) {
+          return Promise.reject(error);
+        }
+
         if (isRefreshing) {
           // Queue request while refresh is in progress
           return new Promise((resolve, reject) => {

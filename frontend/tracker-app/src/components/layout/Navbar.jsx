@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { HiUserCircle, HiArrowRightOnRectangle, HiBars3, HiCog6Tooth, HiExclamationTriangle } from 'react-icons/hi2';
 import useAuth from '../../hooks/useAuth';
@@ -8,12 +8,14 @@ import NotificationDropdown from '../../features/notifications/components/Notifi
 import toast from 'react-hot-toast';
 
 const Navbar = ({ onToggleSidebar }) => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const menuRef = useRef(null);
+  const from = `${location.pathname}${location.search}`;
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -36,7 +38,7 @@ const Navbar = ({ onToggleSidebar }) => {
   const handleLogoutConfirm = () => {
     setShowLogoutConfirm(false);
 
-    // 🔥 Broadcast logout to other tabs
+    // Broadcast logout to other tabs
       localStorage.setItem("event", JSON.stringify({
         type: "LOGOUT",
         time: Date.now()
@@ -54,9 +56,9 @@ const Navbar = ({ onToggleSidebar }) => {
 
   return (
     <>
-      <nav className="fixed top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white px-4 shadow-sm">
+      <nav className="fixed top-0 z-30 flex h-16 w-full items-center justify-between border-b border-gray-200 bg-white px-3 shadow-sm sm:px-4">
         {/* Left — hamburger + logo */}
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-2 sm:gap-3">
           <button
             onClick={onToggleSidebar}
             className="rounded-lg p-2 text-gray-500 hover:bg-gray-100 lg:hidden"
@@ -64,65 +66,94 @@ const Navbar = ({ onToggleSidebar }) => {
             <HiBars3 className="h-6 w-6" />
           </button>
           <h1
-            className="cursor-pointer text-xl font-bold text-primary"
+            className="cursor-pointer truncate text-lg font-bold text-primary sm:text-xl"
             onClick={() => navigate('/')}
           >
             Daily Tracker
           </h1>
         </div>
 
-        {/* Right — notification bell + user menu */}
-        <div className="flex items-center gap-3">
-          {/* Live notification bell with dropdown */}
-          <NotificationDropdown />
+        {/* Right — guest CTAs or notification + user menu */}
+        <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {isAuthenticated ? (
+            <>
+              <NotificationDropdown />
 
-          {/* User dropdown */}
-          <div className="relative" ref={menuRef}>
-            <button
-              onClick={() => setShowUserMenu(!showUserMenu)}
-              className="flex items-center gap-2 rounded-lg p-2 text-gray-700 hover:bg-gray-100"
-            >
-              <HiUserCircle className="h-6 w-6" />
-              <span className="hidden text-sm font-medium sm:block">
-                {user?.fullName || 'User'}
-              </span>
-            </button>
-
-            {showUserMenu && (
-              <div className="absolute right-0 mt-2 w-56 rounded-lg border border-gray-200 bg-white py-2 shadow-lg">
-                <div className="border-b border-gray-100 px-4 py-2">
-                  <p className="text-sm font-medium text-gray-900">{user?.fullName}</p>
-                  <p className="text-xs text-gray-500">{user?.email}</p>
-                  <span className={`mt-1 inline-block rounded-full px-2 py-0.5 text-xs font-medium ${
-                    user?.role === 'SUPER_ADMIN'
-                      ? 'bg-purple-100 text-purple-700'
-                      : user?.role === 'ADMIN'
-                      ? 'bg-blue-100 text-blue-700'
-                      : 'bg-gray-100 text-gray-600'
-                  }`}>
-                    {user?.role?.replace('_', ' ')}
+              <div className="relative" ref={menuRef}>
+                <button
+                  onClick={() => setShowUserMenu(!showUserMenu)}
+                  className="flex items-center gap-2 rounded-lg p-2 text-gray-700 hover:bg-gray-100"
+                >
+                  <HiUserCircle className="h-6 w-6" />
+                  <span className="hidden text-sm font-medium sm:block">
+                    {user?.fullName || 'User'}
                   </span>
-                </div>
-                <button
-                  onClick={() => {
-                    setShowUserMenu(false);
-                    navigate('/profile');
-                  }}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-                >
-                  <HiCog6Tooth className="h-4 w-4" />
-                  My Profile
                 </button>
-                <button
-                  onClick={handleLogoutClick}
-                  className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
-                >
-                  <HiArrowRightOnRectangle className="h-4 w-4" />
-                  Logout
-                </button>
+
+                {showUserMenu && (
+                  <div
+                    className="absolute right-0 mt-2 w-56 max-w-[calc(100vw-1.5rem)] overflow-hidden
+                               rounded-lg border border-gray-200 bg-white py-2 shadow-lg
+                               sm:w-64"
+                  >
+                    <div className="min-w-0 border-b border-gray-100 px-4 py-2">
+                      <p className="truncate text-sm font-medium text-gray-900">
+                        {user?.fullName}
+                      </p>
+                      <p className="mt-0.5 break-all text-xs leading-snug text-gray-500">
+                        {user?.email}
+                      </p>
+                      <span className={`mt-1.5 inline-block max-w-full truncate rounded-full px-2 py-0.5 text-xs font-medium ${
+                        user?.role === 'SUPER_ADMIN'
+                          ? 'bg-purple-100 text-purple-700'
+                          : user?.role === 'ADMIN'
+                          ? 'bg-blue-100 text-blue-700'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}>
+                        {user?.role?.replace('_', ' ')}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setShowUserMenu(false);
+                        navigate('/profile');
+                      }}
+                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
+                    >
+                      <HiCog6Tooth className="h-4 w-4 shrink-0" />
+                      My Profile
+                    </button>
+                    <button
+                      onClick={handleLogoutClick}
+                      className="flex w-full items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50"
+                    >
+                      <HiArrowRightOnRectangle className="h-4 w-4 shrink-0" />
+                      Logout
+                    </button>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                state={{ from }}
+                className="rounded-lg px-2.5 py-2 text-sm font-medium text-teal-800
+                           transition-colors hover:bg-teal-50 sm:px-3"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                state={{ from }}
+                className="rounded-lg bg-primary px-2.5 py-2 text-sm font-semibold text-white
+                           shadow-sm transition-colors hover:bg-primary-dark sm:px-3"
+              >
+                Register
+              </Link>
+            </>
+          )}
         </div>
       </nav>
 

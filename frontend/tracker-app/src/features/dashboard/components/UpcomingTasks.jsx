@@ -11,6 +11,7 @@ import { fetchTasks } from '../../tasks/taskAPI';
 import { formatDate, isOverdue, isToday } from '../../../utils/dateUtils';
 import { PRIORITY_COLORS } from '../../../utils/constants';
 import LoadingSpinner from '../../../components/LoadingSpinner';
+import useAuth from '../../../hooks/useAuth';
 
 const MAX_ITEMS = 5;
 
@@ -23,11 +24,16 @@ const priorityBorder = {
 
 const UpcomingTasks = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [tasks, setTasks]   = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ── All data-fetching logic unchanged ──
   useEffect(() => {
+    if (!isAuthenticated) {
+      setTasks([]);
+      setLoading(false);
+      return;
+    }
     const load = async () => {
       try {
         const response = await fetchTasks({ view: 'week', status: 'PENDING' });
@@ -39,7 +45,7 @@ const UpcomingTasks = () => {
       }
     };
     load();
-  }, []);
+  }, [isAuthenticated]);
 
   if (loading) {
     return (

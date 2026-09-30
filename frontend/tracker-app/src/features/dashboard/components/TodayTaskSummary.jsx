@@ -10,14 +10,20 @@ import {
 import { fetchTasks } from '../../tasks/taskAPI';
 import { isOverdue } from '../../../utils/dateUtils';
 import LoadingSpinner from '../../../components/LoadingSpinner';
+import useAuth from '../../../hooks/useAuth';
 
 const TodayTaskSummary = () => {
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [tasks, setTasks]     = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ── All data-fetching logic unchanged ──
   useEffect(() => {
+    if (!isAuthenticated) {
+      setTasks([]);
+      setLoading(false);
+      return;
+    }
     const load = async () => {
       try {
         const response = await fetchTasks({ view: 'today' });
@@ -29,7 +35,7 @@ const TodayTaskSummary = () => {
       }
     };
     load();
-  }, []);
+  }, [isAuthenticated]);
 
   if (loading) {
     return (

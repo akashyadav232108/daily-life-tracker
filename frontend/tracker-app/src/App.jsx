@@ -13,6 +13,7 @@ import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
 import ProtectedRoute from './components/ProtectedRoute';
 import AdminRoute from './components/AdminRoute';
 import PageLayout from './components/layout/PageLayout';
+import { RegisterPromptProvider } from './contexts/RegisterPromptContext';
 
 // Auth pages (no layout — standalone)
 import LoginPage from './features/auth/pages/LoginPage';
@@ -21,7 +22,7 @@ import ForgotPasswordPage from './features/auth/pages/ForgotPasswordPage';
 import OtpVerifyPage from './features/auth/pages/OtpVerifyPage';
 import ResetPasswordPage from './features/auth/pages/ResetPasswordPage';
 
-// Protected pages
+// App pages (guest-browsable user modules; profile/admin stay protected)
 import DashboardPage from './features/dashboard/pages/DashboardPage';
 import TasksPage from './features/tasks/pages/TasksPage';
 import ProfilePage from './features/auth/pages/ProfilePage';
@@ -32,6 +33,7 @@ import HealthPage from './features/health/pages/HealthPage';
 import ExercisePage from './features/exercises/pages/ExercisePage';
 import ExpensePage from './features/expenses/pages/ExpensePage';
 import NotificationsPage from './features/notifications/pages/NotificationsPage';
+import AboutPage from './features/about/pages/AboutPage';
 
 const App = () => {
 
@@ -118,152 +120,140 @@ const App = () => {
       }, [dispatch, navigate, location]);
 
   return (
-    <Routes>
-      {/* ── Public Routes ── */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
-      {/* Forgot password — 3-step flow */}
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/verify-otp"      element={<OtpVerifyPage />} />
-      <Route path="/reset-password"  element={<ResetPasswordPage />} />
+    <RegisterPromptProvider>
+      <Routes>
+        {/* ── Public auth routes ── */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/verify-otp"      element={<OtpVerifyPage />} />
+        <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
-      {/* ── Protected Routes (require authentication) ── */}
-      <Route
-        path="/"
-        element={
-          <ProtectedRoute>
+        {/* ── Guest-browsable user modules (mutations gated in UI) ── */}
+        <Route
+          path="/"
+          element={
             <PageLayout>
               <DashboardPage />
             </PageLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Task routes */}
-      <Route
-        path="/tasks"
-        element={
-          <ProtectedRoute>
+          }
+        />
+        <Route
+          path="/tasks"
+          element={
             <PageLayout>
               <TasksPage />
             </PageLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Profile page */}
-      <Route
-        path="/profile"
-        element={
-          <ProtectedRoute>
-            <PageLayout>
-              <ProfilePage />
-            </PageLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Health */}
-      <Route
-        path="/health"
-        element={
-          <ProtectedRoute>
+          }
+        />
+        <Route
+          path="/health"
+          element={
             <PageLayout>
               <HealthPage />
             </PageLayout>
-          </ProtectedRoute>
-        }
-      />
-      {/* Exercise */}
-      <Route
-        path="/exercise"
-        element={
-          <ProtectedRoute>
+          }
+        />
+        <Route
+          path="/exercise"
+          element={
             <PageLayout>
               <ExercisePage />
             </PageLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/expenses"
-        element={
-          <ProtectedRoute>
+          }
+        />
+        <Route
+          path="/expenses"
+          element={
             <PageLayout>
               <ExpensePage />
             </PageLayout>
-          </ProtectedRoute>
-        }
-      />
-
-      {/* Notifications */}
-      <Route
-        path="/notifications"
-        element={
-          <ProtectedRoute>
+          }
+        />
+        <Route
+          path="/notifications"
+          element={
             <PageLayout>
               <NotificationsPage />
             </PageLayout>
-          </ProtectedRoute>
-        }
-      />
+          }
+        />
+        <Route
+          path="/about"
+          element={
+            <PageLayout>
+              <AboutPage />
+            </PageLayout>
+          }
+        />
 
-      {/* ── Admin Routes ── */}
-      {/* /admin — Dashboard overview (landing page for admins) */}
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute>
-            <AdminRoute>
+        {/* ── Auth-required ── */}
+        <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
               <PageLayout>
-                <AdminDashboardPage />
+                <ProfilePage />
               </PageLayout>
-            </AdminRoute>
-          </ProtectedRoute>
-        }
-      />
-      {/* /admin/tasks — Platform task stats + user task lookup */}
-      <Route
-        path="/admin/tasks"
-        element={
-          <ProtectedRoute>
-            <AdminRoute>
-              <PageLayout>
-                <AdminTasksPage />
-              </PageLayout>
-            </AdminRoute>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/users"
-        element={
-          <ProtectedRoute>
-            <AdminRoute>
-              <PageLayout>
-                <AdminUsersPage />
-              </PageLayout>
-            </AdminRoute>
-          </ProtectedRoute>
-        }
-      />
+            </ProtectedRoute>
+          }
+        />
 
-      {/* 404 Catch-all */}
-      <Route
-        path="*"
-        element={
-          <div className="flex min-h-screen items-center justify-center bg-gray-50">
-            <div className="text-center">
-              <h1 className="text-6xl font-bold text-gray-300">404</h1>
-              <p className="mt-2 text-gray-500">Page not found</p>
-              <a href="/" className="mt-4 inline-block text-primary hover:text-primary-dark">
-                Go back home
-              </a>
+        {/* ── Admin Routes ── */}
+        <Route
+          path="/admin"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <PageLayout>
+                  <AdminDashboardPage />
+                </PageLayout>
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/tasks"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <PageLayout>
+                  <AdminTasksPage />
+                </PageLayout>
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute>
+              <AdminRoute>
+                <PageLayout>
+                  <AdminUsersPage />
+                </PageLayout>
+              </AdminRoute>
+            </ProtectedRoute>
+          }
+        />
+
+        {/* 404 Catch-all */}
+        <Route
+          path="*"
+          element={
+            <div className="flex min-h-screen items-center justify-center bg-gray-50">
+              <div className="text-center">
+                <h1 className="text-6xl font-bold text-gray-300">404</h1>
+                <p className="mt-2 text-gray-500">Page not found</p>
+                <a href="/" className="mt-4 inline-block text-primary hover:text-primary-dark">
+                  Go back home
+                </a>
+              </div>
             </div>
-          </div>
-        }
-      />
-    </Routes>
+          }
+        />
+      </Routes>
+    </RegisterPromptProvider>
   );
 };
 

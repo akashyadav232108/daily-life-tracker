@@ -6,6 +6,7 @@ import { HiPencil, HiTrash, HiArrowDown, HiArrowUp } from 'react-icons/hi2';
 import ConfirmDialog from '../../../components/ConfirmDialog';
 import { useState } from 'react';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 /**
  * Renders the list of expense/income entries.
@@ -18,10 +19,15 @@ import toast from 'react-hot-toast';
  */
 const ExpenseList = ({ expenses = [], onEdit, loading, onAddClick }) => {
   const dispatch = useDispatch();
+  const { requireAuth } = useRequireAuth();
   const [deleteTarget, setDeleteTarget] = useState(null);
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
+    if (!requireAuth()) {
+      setDeleteTarget(null);
+      return;
+    }
     try {
       await dispatch(deleteExpense(deleteTarget.id)).unwrap();
       toast.success('Entry deleted');

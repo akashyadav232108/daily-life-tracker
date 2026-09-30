@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import Navbar from './Navbar';
 import Sidebar from './Sidebar';
+import GuestBanner from '../GuestBanner';
 
 /**
- * Main layout wrapper for authenticated pages.
+ * Main layout wrapper for app pages (authenticated or guest).
  * Provides Navbar + Sidebar + scrollable content area.
  */
 const PageLayout = ({ children }) => {
@@ -16,7 +17,10 @@ const PageLayout = ({ children }) => {
 
       {/* Main content — offset for navbar (h-16) and sidebar (w-64) */}
       <main className="pt-16 lg:pl-64">
-        <div className="mx-auto max-w-7xl p-4 sm:p-6">{children}</div>
+        <div className="mx-auto max-w-7xl p-4 sm:p-6">
+          <GuestBanner />
+          {children}
+        </div>
       </main>
     </div>
   );

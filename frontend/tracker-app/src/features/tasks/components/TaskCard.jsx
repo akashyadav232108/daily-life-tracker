@@ -11,6 +11,7 @@ import {
   HiArrowPathRoundedSquare,
 } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 /**
  * Individual task card with actions: complete/reopen, edit, delete.
@@ -22,12 +23,14 @@ import toast from 'react-hot-toast';
  */
 const TaskCard = ({ task, onEdit, onDelete }) => {
   const dispatch = useDispatch();
+  const { requireAuth } = useRequireAuth();
 
   const isCompleted = task.status === 'COMPLETED';
   const overdue = !isCompleted && isOverdue(task.dueDate);
   const priorityStyle = PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.MEDIUM;
 
   const handleToggleStatus = async () => {
+    if (!requireAuth()) return;
     try {
       if (isCompleted) {
         await dispatch(reopenTask(task.id)).unwrap();

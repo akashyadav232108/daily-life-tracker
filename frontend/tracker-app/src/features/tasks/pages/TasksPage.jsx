@@ -17,9 +17,13 @@ import ConfirmDialog from '../../../components/ConfirmDialog';
 import LoadingSpinner from '../../../components/LoadingSpinner';
 import { HiPlus, HiClipboardDocumentList } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import useAuth from '../../../hooks/useAuth';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 const TasksPage = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
+  const { requireAuth } = useRequireAuth();
   const tasks = useSelector(selectTasks);
   const loading = useSelector(selectTasksLoading);
   const error = useSelector(selectTasksError);
@@ -31,10 +35,11 @@ const TasksPage = () => {
   const [editingTask, setEditingTask] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
 
-  // ── Fetch tasks whenever filters change ──
+  // ── Fetch tasks whenever filters change (skip for guests) ──
   useEffect(() => {
+    if (!isAuthenticated) return;
     dispatch(fetchTasks(filters));
-  }, [dispatch, filters]);
+  }, [dispatch, filters, isAuthenticated]);
 
   // ── Show error toast ──
   useEffect(() => {
@@ -59,11 +64,17 @@ const TasksPage = () => {
     setIsFormOpen(false);
     setEditingTask(null);
     // Re-fetch to get the latest list after create/update
-    dispatch(fetchTasks(filters));
+    if (isAuthenticated) {
+      dispatch(fetchTasks(filters));
+    }
   };
 
   const confirmDelete = async () => {
     if (!deleteTarget) return;
+    if (!requireAuth()) {
+      setDeleteTarget(null);
+      return;
+    }
     try {
       await dispatch(deleteTask(deleteTarget.id)).unwrap();
       toast.success('Task deleted successfully');

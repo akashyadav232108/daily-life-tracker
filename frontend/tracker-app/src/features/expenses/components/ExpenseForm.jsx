@@ -9,6 +9,7 @@ import {
 import { getTodayISO } from '../../../utils/dateUtils';
 import { HiXMark } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 /**
  * Modal form for adding or editing an expense/income entry.
@@ -21,6 +22,7 @@ import toast from 'react-hot-toast';
 const ExpenseForm = ({ isOpen, onClose, editingExpense = null }) => {
   const dispatch = useDispatch();
   const loading = useSelector(selectExpenseLoading);
+  const { requireAuth } = useRequireAuth();
   const isEditing = !!editingExpense;
 
   const [formData, setFormData] = useState({
@@ -66,6 +68,7 @@ const ExpenseForm = ({ isOpen, onClose, editingExpense = null }) => {
       toast.error('Amount must be greater than 0');
       return;
     }
+    if (!requireAuth()) return;
 
     const payload = {
       ...formData,

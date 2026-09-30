@@ -5,6 +5,7 @@ import { PRIORITY_OPTIONS, RECURRENCE_OPTIONS } from '../../../utils/constants';
 import { getTodayISO } from '../../../utils/dateUtils';
 import { HiXMark } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 /**
  * Modal form for creating / editing a task.
@@ -17,6 +18,7 @@ import toast from 'react-hot-toast';
 const TaskForm = ({ isOpen, onClose, editingTask = null }) => {
   const dispatch = useDispatch();
   const loading = useSelector(selectTasksLoading);
+  const { requireAuth } = useRequireAuth();
 
   const isEditing = !!editingTask;
 
@@ -68,6 +70,9 @@ const TaskForm = ({ isOpen, onClose, editingTask = null }) => {
       toast.error('Due date is required');
       return;
     }
+
+    // Guests may fill the form; block DB save until registered
+    if (!requireAuth()) return;
 
     try {
       if (isEditing) {

@@ -19,6 +19,7 @@ import {
   selectNotifLoading,
 } from '../notificationSlice';
 import toast from 'react-hot-toast';
+import useAuth from '../../../hooks/useAuth';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -56,6 +57,7 @@ const timeAgo = (dateStr) => {
 const NotificationDropdown = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
   const [open, setOpen] = useState(false);
   const panelRef = useRef(null);
 
@@ -63,19 +65,20 @@ const NotificationDropdown = () => {
   const notifications = useSelector(selectNotifications);
   const loading = useSelector(selectNotifLoading);
 
-  // Poll unread count every 60 s
+  // Poll unread count every 60 s (authenticated only)
   useEffect(() => {
+    if (!isAuthenticated) return undefined;
     dispatch(fetchUnreadCount());
     const interval = setInterval(() => dispatch(fetchUnreadCount()), 60_000);
     return () => clearInterval(interval);
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated]);
 
   // Load latest 10 notifications when panel opens
   useEffect(() => {
-    if (open) {
+    if (open && isAuthenticated) {
       dispatch(fetchNotifications({ page: 0, size: 10 }));
     }
-  }, [open, dispatch]);
+  }, [open, dispatch, isAuthenticated]);
 
   // Close on outside click
   useEffect(() => {

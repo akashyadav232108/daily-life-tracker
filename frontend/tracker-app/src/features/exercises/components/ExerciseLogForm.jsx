@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { logExercise, fetchExerciseLogs, fetchTodayPlanned } from '../exerciseSlice';
 import toast from 'react-hot-toast';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 const MUSCLE_GROUPS = [
   { value: 'CHEST',     label: 'Chest',      emoji: '💪', color: 'bg-red-100    text-red-700    border-red-200'    },
@@ -28,6 +29,7 @@ const initial = {
 
 const ExerciseLogForm = () => {
   const dispatch = useDispatch();
+  const { requireAuth } = useRequireAuth();
   const [form, setForm] = useState(initial);
   const [loading, setLoading] = useState(false);
 
@@ -46,6 +48,7 @@ const ExerciseLogForm = () => {
       toast.error('Please enter an exercise name.');
       return;
     }
+    if (!requireAuth()) return;
     const payload = {
       ...form,
       logDate: form.logDate || null,

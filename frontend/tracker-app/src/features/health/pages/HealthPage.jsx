@@ -14,18 +14,21 @@ import HealthLogList from '../components/HealthLogList';
 import WeeklySummaryCard from '../components/WeeklySummaryCard';
 import { HiHeart, HiBeaker, HiMoon, HiArrowTrendingUp } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import useAuth from '../../../hooks/useAuth';
 
 const HealthPage = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
   const logs = useSelector(selectHealthLogs);
   const weekly = useSelector(selectWeeklySummary);
   const loading = useSelector(selectHealthLoading);
   const error = useSelector(selectHealthError);
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     dispatch(fetchHealthLogs({ view: 'week' }));
     dispatch(fetchWeeklySummary());
-  }, [dispatch]);
+  }, [dispatch, isAuthenticated]);
 
   useEffect(() => {
     if (error) {

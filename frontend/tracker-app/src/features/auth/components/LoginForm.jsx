@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import { setCredentials, setLoading, setError } from '../authSlice';
@@ -11,7 +11,9 @@ import { HiEnvelope, HiLockClosed, HiEye, HiEyeSlash, HiArrowRight } from 'react
 const LoginForm = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const { loading } = useAuth();
+  const from = location.state?.from || '/';
 
   const [formData, setFormData] = useState({
     email: '',
@@ -44,7 +46,7 @@ const LoginForm = () => {
           }));
 
         toast.success('Login successful!');
-        navigate('/');
+        navigate(from, { replace: true });
       } else {
         toast.error(response.data.message || 'Login failed');
       }
@@ -190,10 +192,21 @@ const LoginForm = () => {
       {/* Register link */}
       <Link
         to="/register"
+        state={location.state?.from ? { from: location.state.from } : undefined}
         className="flex w-full items-center justify-center rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gray-700 transition-all hover:border-primary/30 hover:bg-indigo-50 hover:text-primary"
       >
         Create a free account
       </Link>
+
+      {/* Guest browsing — does not break existing login/register flow */}
+      <button
+        type="button"
+        onClick={() => navigate('/')}
+        className="w-full rounded-xl px-4 py-2.5 text-sm font-medium text-teal-700
+                   transition-colors hover:bg-teal-50 hover:text-teal-900"
+      >
+        Continue as guest
+      </button>
     </form>
   );
 };

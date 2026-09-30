@@ -29,12 +29,14 @@ import {
 } from '../../../utils/constants';
 import { HiPlus, HiAdjustmentsHorizontal, HiXMark, HiArrowUpTray } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
+import useAuth from '../../../hooks/useAuth';
 
 // Derive current month in "YYYY-MM" format
 const getCurrentMonth = () => new Date().toISOString().slice(0, 7);
 
 const ExpensePage = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
   const expenses = useSelector(selectExpenses);
   const budgets = useSelector(selectBudgets);
   const budgetStatus = useSelector(selectBudgetStatus);
@@ -57,11 +59,12 @@ const ExpensePage = () => {
 
   // ── Load data ──────────────────────────────────────────────────
   const loadData = useCallback(() => {
+    if (!isAuthenticated) return;
     dispatch(fetchExpenses(filters));
     dispatch(fetchBudgets(currentMonth));
     dispatch(fetchBudgetStatus(currentMonth));
     dispatch(fetchMonthlySummary(currentMonth));
-  }, [dispatch, filters, currentMonth]);
+  }, [dispatch, filters, currentMonth, isAuthenticated]);
 
   useEffect(() => {
     loadData();

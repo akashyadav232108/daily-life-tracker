@@ -1,4 +1,4 @@
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import useAuth from '../../../hooks/useAuth';
 import LoginForm from '../components/LoginForm';
 import {
@@ -17,9 +17,11 @@ const features = [
 
 const LoginPage = () => {
   const { isAuthenticated } = useAuth();
+  const location = useLocation();
+  const from = location.state?.from || '/';
 
   if (isAuthenticated) {
-    return <Navigate to="/" replace />;
+    return <Navigate to={from} replace />;
   }
 
   return (

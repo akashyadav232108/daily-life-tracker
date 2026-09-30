@@ -14,6 +14,7 @@ import {
 } from 'react-icons/hi2';
 import toast from 'react-hot-toast';
 import ConfirmDialog from '../../../components/ConfirmDialog';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 // ─── Constants ───────────────────────────────────────────────────
 const DAYS = ['MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY', 'SUNDAY'];
@@ -271,6 +272,7 @@ const DayRow = ({ row, idx, onSetMuscle, onAddExercise, onExerciseChange, onRemo
 // ─── Main PlanBuilder ────────────────────────────────────────────
 const PlanBuilder = ({ plans, activePlan }) => {
   const dispatch = useDispatch();
+  const { requireAuth } = useRequireAuth();
 
   // Form state
   const [showForm, setShowForm] = useState(false);
@@ -329,6 +331,7 @@ const PlanBuilder = ({ plans, activePlan }) => {
 
   // ── Action handlers ──
   const onCreate = async () => {
+    if (!requireAuth()) return;
     try {
       setSaving(true);
       await dispatch(createPlan(payload)).unwrap();
@@ -346,6 +349,7 @@ const PlanBuilder = ({ plans, activePlan }) => {
   };
 
   const onActivate = async (id) => {
+    if (!requireAuth()) return;
     try {
       await dispatch(activatePlan(id)).unwrap();
       toast.success('Plan activated!');
@@ -365,6 +369,10 @@ const PlanBuilder = ({ plans, activePlan }) => {
   // Step 2: user confirms inside the dialog → actually delete
   const onConfirmDelete = async () => {
     if (!deleteTarget) return;
+    if (!requireAuth()) {
+      setDeleteTarget(null);
+      return;
+    }
     const { id, name } = deleteTarget;
     setDeleteTarget(null);
     try {

@@ -54,7 +54,7 @@ const quickActions = [
 ];
 
 const DashboardPage = () => {
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const getGreeting = () => {
@@ -78,9 +78,13 @@ const DashboardPage = () => {
           <p className="text-sm font-medium text-gray-400">{today}</p>
           <h1 className="mt-1 text-2xl font-bold text-gray-900">
             {getGreeting()},{' '}
-            <span className="text-primary">{user?.fullName?.split(' ')[0] || 'there'}</span>!
+            <span className="text-primary">
+              {isAuthenticated ? (user?.fullName?.split(' ')[0] || 'there') : 'Guest'}
+            </span>!
           </h1>
-          <p className="mt-1 text-sm text-gray-500">Here's your daily overview</p>
+          <p className="mt-1 text-sm text-gray-500">
+            {isAuthenticated ? "Here's your daily overview" : "Explore the app — register when you're ready to begin"}
+          </p>
         </div>
         <button
           onClick={() => navigate('/tasks')}

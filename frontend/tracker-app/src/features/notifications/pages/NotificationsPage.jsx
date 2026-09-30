@@ -26,6 +26,8 @@ import {
   selectNotifLoading,
 } from '../notificationSlice';
 import toast from 'react-hot-toast';
+import useAuth from '../../../hooks/useAuth';
+import { useRequireAuth } from '../../../contexts/RegisterPromptContext';
 
 // ── Helpers ──────────────────────────────────────────────────────
 
@@ -110,6 +112,8 @@ const Stat = ({ label, value, color }) => (
 
 const NotificationsPage = () => {
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
+  const { requireAuth } = useRequireAuth();
   const [tab, setTab] = useState('all'); // 'all' | 'unread'
 
   const notifications = useSelector(selectNotifications);
@@ -121,6 +125,7 @@ const NotificationsPage = () => {
   const loading       = useSelector(selectNotifLoading);
 
   const loadPage = (page = 0) => {
+    if (!isAuthenticated) return;
     dispatch(fetchNotifications({
       page,
       size: 15,
@@ -129,21 +134,25 @@ const NotificationsPage = () => {
   };
 
   useEffect(() => {
+    if (!isAuthenticated) return;
     loadPage(0);
     dispatch(fetchStreaks());
     dispatch(fetchWeeklySummary());
-  }, [tab]); // eslint-disable-line
+  }, [tab, isAuthenticated]); // eslint-disable-line
 
   const handleMarkRead = async (id) => {
+    if (!requireAuth()) return;
     await dispatch(markAsRead(id));
   };
 
   const handleDelete = async (id) => {
+    if (!requireAuth()) return;
     await dispatch(deleteNotification(id));
     toast.success('Notification deleted');
   };
 
   const handleMarkAll = async () => {
+    if (!requireAuth()) return;
     await dispatch(markAllRead());
     toast.success('All notifications marked as read');
   };

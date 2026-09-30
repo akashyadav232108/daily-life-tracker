@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { fetchTodayPlanned } from '../../exercises/exerciseAPI';
 import { HiBolt, HiMoon, HiArrowRight } from 'react-icons/hi2';
+import useAuth from '../../../hooks/useAuth';
 
 const muscleColor = {
   CHEST:     'bg-red-100 text-red-700',
@@ -18,9 +19,14 @@ const TodayWorkout = () => {
   const [data, setData]     = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-  // ── All data-fetching logic unchanged ──
   useEffect(() => {
+    if (!isAuthenticated) {
+      setData(null);
+      setLoading(false);
+      return;
+    }
     const load = async () => {
       try {
         const res = await fetchTodayPlanned();
@@ -32,7 +38,7 @@ const TodayWorkout = () => {
       }
     };
     load();
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <div className="rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">

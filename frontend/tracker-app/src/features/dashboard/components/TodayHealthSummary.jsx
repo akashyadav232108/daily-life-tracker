@@ -9,6 +9,7 @@ import {
   HiArrowTrendingUp,
   HiScale,
 } from 'react-icons/hi2';
+import useAuth from '../../../hooks/useAuth';
 
 const moodEmoji = { GREAT: '😄', GOOD: '🙂', OKAY: '😐', BAD: '😕', TERRIBLE: '😞' };
 const moodColor = {
@@ -24,9 +25,15 @@ const TodayHealthSummary = () => {
   const [weekly, setWeekly] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { isAuthenticated } = useAuth();
 
-  // ── All data-fetching logic unchanged ──
   useEffect(() => {
+    if (!isAuthenticated) {
+      setToday(null);
+      setWeekly(null);
+      setLoading(false);
+      return;
+    }
     const load = async () => {
       try {
         const [todayRes, weeklyRes] = await Promise.allSettled([
@@ -42,7 +49,7 @@ const TodayHealthSummary = () => {
       }
     };
     load();
-  }, []);
+  }, [isAuthenticated]);
 
   return (
     <div className="rounded-2xl bg-white shadow-sm ring-1 ring-gray-100">
